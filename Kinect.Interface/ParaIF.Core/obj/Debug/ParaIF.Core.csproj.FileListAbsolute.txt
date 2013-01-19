@@ -1,0 +1,5 @@
+C:\Users\Yang\Projects\ParaIF\ParaIF.Core\bin\Debug\ParaIF.Core.dll
+C:\Users\Yang\Projects\ParaIF\ParaIF.Core\bin\Debug\ParaIF.Core.pdb
+C:\Users\Yang\Projects\ParaIF\ParaIF.Core\obj\Debug\ParaIF.Core.dll
+C:\Users\Yang\Projects\ParaIF\ParaIF.Core\obj\Debug\ParaIF.Core.pdb
+C:\Users\Yang\Projects\ParaIF\ParaIF.Core\obj\Debug\ParaIF.Core.csprojResolveAssemblyReference.cache

@@ -1,0 +1,7 @@
+C:\Users\Yang\Projects\ParaIF\ParaIF.KinectSDK\bin\Debug\ParaIF.KinectSDK.dll
+C:\Users\Yang\Projects\ParaIF\ParaIF.KinectSDK\bin\Debug\ParaIF.KinectSDK.pdb
+C:\Users\Yang\Projects\ParaIF\ParaIF.KinectSDK\bin\Debug\ParaIF.Core.dll
+C:\Users\Yang\Projects\ParaIF\ParaIF.KinectSDK\bin\Debug\ParaIF.Core.pdb
+C:\Users\Yang\Projects\ParaIF\ParaIF.KinectSDK\obj\Debug\ParaIF.KinectSDK.csprojResolveAssemblyReference.cache
+C:\Users\Yang\Projects\ParaIF\ParaIF.KinectSDK\obj\Debug\ParaIF.KinectSDK.dll
+C:\Users\Yang\Projects\ParaIF\ParaIF.KinectSDK\obj\Debug\ParaIF.KinectSDK.pdb

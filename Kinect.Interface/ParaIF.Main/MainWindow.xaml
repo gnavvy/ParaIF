@@ -1,0 +1,18 @@
+﻿<Window x:Class="ParaIF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="clr-namespace:ParaIF.UI;assembly=ParaIF.UI"
+        Title="Main" Height="640" Width="960">
+    <Grid>
+        <StackPanel HorizontalAlignment="Left" Margin="10" Width="280">
+            <Label FontWeight="Bold">ParaIF Kinect Interface</Label>
+            <Button Margin="5" VerticalAlignment="Bottom" Click="Start_Button_Click">Start</Button>
+            <Button Margin="5" VerticalAlignment="Bottom" Click="Exit_Button_Click">Exit</Button>
+            <StackPanel Orientation="Horizontal">
+                <CheckBox Margin="5" Content="Clustering Layer" Height="16" Name="_checkClusterLayer" Click="checkClusterLayer_Click" IsEnabled="False" />
+                <CheckBox Margin="5" Content="Hand Layer" Height="16" Name="_checkHandLayer" Click="checkHandLayer_Click" IsEnabled="False" />
+            </StackPanel>
+        </StackPanel>
+        <v:WpfVideoControl Name="_videoControl" Width="640" Height="480" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top"/>
+    </Grid>
+</Window>

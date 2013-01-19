@@ -1,0 +1,13 @@
+C:\Users\Yang\Projects\ParaIF\ParaIF.UI\bin\Debug\ParaIF.UI.dll
+C:\Users\Yang\Projects\ParaIF\ParaIF.UI\bin\Debug\ParaIF.UI.pdb
+C:\Users\Yang\Projects\ParaIF\ParaIF.UI\bin\Debug\ParaIF.Core.dll
+C:\Users\Yang\Projects\ParaIF\ParaIF.UI\bin\Debug\ParaIF.Gesture.dll
+C:\Users\Yang\Projects\ParaIF\ParaIF.UI\bin\Debug\ParaIF.Core.pdb
+C:\Users\Yang\Projects\ParaIF\ParaIF.UI\bin\Debug\ParaIF.Gesture.pdb
+C:\Users\Yang\Projects\ParaIF\ParaIF.UI\obj\Debug\ParaIF.UI.csprojResolveAssemblyReference.cache
+C:\Users\Yang\Projects\ParaIF\ParaIF.UI\obj\Debug\WpfVideoControl.baml
+C:\Users\Yang\Projects\ParaIF\ParaIF.UI\obj\Debug\WpfVideoControl.g.cs
+C:\Users\Yang\Projects\ParaIF\ParaIF.UI\obj\Debug\ParaIF.UI_MarkupCompile.cache
+C:\Users\Yang\Projects\ParaIF\ParaIF.UI\obj\Debug\ParaIF.UI.g.resources
+C:\Users\Yang\Projects\ParaIF\ParaIF.UI\obj\Debug\ParaIF.UI.dll
+C:\Users\Yang\Projects\ParaIF\ParaIF.UI\obj\Debug\ParaIF.UI.pdb

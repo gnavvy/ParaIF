@@ -1,0 +1,7 @@
+C:\Users\Yang\Projects\ParaIF\ParaIF.Gesture\bin\Debug\ParaIF.Gesture.dll
+C:\Users\Yang\Projects\ParaIF\ParaIF.Gesture\bin\Debug\ParaIF.Gesture.pdb
+C:\Users\Yang\Projects\ParaIF\ParaIF.Gesture\bin\Debug\ParaIF.Core.dll
+C:\Users\Yang\Projects\ParaIF\ParaIF.Gesture\bin\Debug\ParaIF.Core.pdb
+C:\Users\Yang\Projects\ParaIF\ParaIF.Gesture\obj\Debug\ParaIF.Gesture.csprojResolveAssemblyReference.cache
+C:\Users\Yang\Projects\ParaIF\ParaIF.Gesture\obj\Debug\ParaIF.Gesture.dll
+C:\Users\Yang\Projects\ParaIF\ParaIF.Gesture\obj\Debug\ParaIF.Gesture.pdb
