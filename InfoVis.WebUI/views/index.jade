@@ -1,0 +1,17 @@
+extends layout
+
+//- local js, only used in this page
+block scripts
+  script(src="/lib/d3.v3.min.js")
+  script(src="/lib/underscore-min.js")
+  script(src="/lib/now.js")
+  script(src="/model/shapes.js")
+
+block content
+  h3 d3.js practice
+  button.btn.btn-primary#shuffle(title='changes position of each circle') shuffle
+  button.btn.btn-primary#stream(title='triggers a batch of 100 add/remove events') stream
+  button.btn.btn-primary#reset(title='creates a new server model') reset
+  span#log
+  br
+  svg#viz

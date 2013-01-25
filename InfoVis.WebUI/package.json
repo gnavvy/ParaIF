@@ -1,0 +1,13 @@
+{
+    "name": "InfoVis"
+  , "version": "0.0.1"
+  , "private": true
+  , "dependencies": {
+      "express": ">= 3.0.4"
+    , "jade": ">= 0.0.1"
+    , "socket.io": ">= 0.9.0"
+    , "d3": ">= 3.0.0"
+    , "now": ">= 0.8.1"
+    , "underscore": ">= 1.4.0"
+  }
+}

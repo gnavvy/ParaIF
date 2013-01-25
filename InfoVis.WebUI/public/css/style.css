@@ -1,0 +1,20 @@
+button {
+    margin-right: 16px;
+}
+
+#viz {
+    margin-top: 16px;
+	height: 500px;
+    border: 1px solid #3AA9E8;
+}
+
+#log {
+    color: #3AA9E8
+}
+
+circle:hover {
+    stroke-width: 1;
+	stroke: #666;
+    cursor: pointer;
+}
+
