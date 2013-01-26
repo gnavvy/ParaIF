@@ -4,6 +4,7 @@ button {
 
 #viz {
     margin-top: 16px;
+    width: 800px;
 	height: 500px;
     border: 1px solid #3AA9E8;
 }
@@ -17,4 +18,3 @@ circle:hover {
 	stroke: #666;
     cursor: pointer;
 }
-

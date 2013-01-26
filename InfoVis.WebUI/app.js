@@ -37,15 +37,17 @@ var everyone = require('now').initialize(server);
 // model
 var circle = require('./models/shapes').circle;
 
+// call from client
 everyone.now.start = function() {
   console.log('send data: ' + circle.getSize() + ' entries');
   var startingClient = this.now;
   startingClient.setData(new Date().getTime(), circle.getData());
 }
 
-everyone.now.add = function(x, y) {
-  console.log('add object @ (' + x + ',' + y + ')');
-  var entry = circle.add(x, y);
+everyone.now.add = function(x, y, group) {
+  console.log('add object @ (' + x + ',' + y + ') of group: ' + group);
+  var entry = circle.add(x, y, group);
+  console.log(entry);
   everyone.now.addData(new Date().getTime(), entry);
 }
 
@@ -55,16 +57,34 @@ everyone.now.remove = function(id) {
   everyone.now.removeData(new Date().getTime(), id);
 }
 
+everyone.now.shuffle = function() {
+  console.log('shuffle');
+  circle.shuffle();
+  everyone.now.setData(new Date().getTime(), circle.getData());
+}
+
+everyone.now.stream = function() {
+  console.log('stream');
+  var count = 100;
+  var streamEvent = function () {
+    setTimeout(function() {
+      everyone.now.addData(new Date().getTime(), circle.add(0, 0));
+      everyone.now.removeData(new Date().getTime(), circle.removeRandom());
+      if (--count) { streamEvent(); }
+    }, 200);
+  };
+  streamEvent();
+}
+
 everyone.now.reset = function() {
   console.log('reset');
   circle.init();
   everyone.now.setData(new Date().getTime(), circle.getData());
 }
 
-everyone.now.translate = function(i, x, y) {
-  circle.translate(i, x, y);
-  everyone.now.setData(new Date().getTime(), circle.getData());
-}
+// everyone.now.setBoundary = function(x, y) {
+//   circle.setBoundary(x, y);
+// };
 
 circle.init();
 

@@ -9,9 +9,17 @@ block scripts
 
 block content
   h3 d3.js practice
-  button.btn.btn-primary#shuffle(title='changes position of each circle') shuffle
-  button.btn.btn-primary#stream(title='triggers a batch of 100 add/remove events') stream
-  button.btn.btn-primary#reset(title='creates a new server model') reset
+  button.btn.btn-primary#shuffle Shuffle
+  button.btn.btn-primary#stream Stream
+  button.btn.btn-primary#reset Reset
+  button.btn.btn-primary#add Add Random
+  
+  button.btn#debug
+  button.btn.btn-primary#blue
+  button.btn.btn-success#green
+  button.btn.btn-warning#orange
+  button.btn.btn-danger#red
+
   span#log
   br
   svg#viz
