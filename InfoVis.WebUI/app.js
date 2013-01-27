@@ -32,61 +32,70 @@ app.get('/d3js', routes.d3js);
 var server = http.createServer(app);
 
 // now.js setup
-var everyone = require('now').initialize(server);
+var clients = require('now').initialize(server).now;
 
 // model
-var circle = require('./models/shapes').circle;
+var dataset = require('./model.server').dataset;
 
-// call from client
-everyone.now.start = function() {
-  console.log('send data: ' + circle.getSize() + ' entries');
+clients.start = function() {
+  console.log('init random data: ' + dataset.getSize() + ' entries');
   var startingClient = this.now;
-  startingClient.setData(new Date().getTime(), circle.getData());
+  startingClient.setData(dataset.getData());
 }
 
-everyone.now.add = function(x, y, group) {
-  console.log('add object @ (' + x + ',' + y + ') of group: ' + group);
-  var entry = circle.add(x, y, group);
-  console.log(entry);
-  everyone.now.addData(new Date().getTime(), entry);
+clients.add = function(x, y, g) {
+  var entry = dataset.add(x, y, g);
+  clients.addData(entry);
+  console.log('add new entry @ (' + x + ',' + y + ') of group: ' + g);
 }
 
-everyone.now.remove = function(id) {
-  console.log('remove object: id = ' + id);
-  circle.remove(id);
-  everyone.now.removeData(new Date().getTime(), id);
+clients.remove = function(id) {
+  dataset.remove(id);
+  clients.removeData(id);
+  console.log('remove entry: id = ' + id);
 }
 
-everyone.now.shuffle = function() {
-  console.log('shuffle');
-  circle.shuffle();
-  everyone.now.setData(new Date().getTime(), circle.getData());
+clients.shuffle = function() {
+  dataset.shuffle();
+  clients.setData(dataset.getData());
+  console.log('shuffle existing data');
 }
 
-everyone.now.stream = function() {
-  console.log('stream');
-  var count = 100;
+clients.stream = function() {
+  var count = 10;
   var streamEvent = function () {
     setTimeout(function() {
-      everyone.now.addData(new Date().getTime(), circle.add(0, 0));
-      everyone.now.removeData(new Date().getTime(), circle.removeRandom());
-      if (--count) { streamEvent(); }
+      clients.addData(dataset.add(0, 0));
+      clients.removeData(dataset.removeRandom());
+      if (--count) streamEvent();
     }, 200);
   };
   streamEvent();
+  console.log('streaming new data entries');
 }
 
-everyone.now.reset = function() {
-  console.log('reset');
-  circle.init();
-  everyone.now.setData(new Date().getTime(), circle.getData());
+clients.reset = function() {
+  dataset.init();
+  clients.setData(dataset.getData());
+  console.log('reset data');
 }
 
-// everyone.now.setBoundary = function(x, y) {
-//   circle.setBoundary(x, y);
-// };
+var svm = require("svm");
+var SVM = new svm.SVM();
+clients.retrain = function() {
+  var data = dataset.getData();
+  console.log(data);
+  var labels = dataset.getLabels();
+  console.log(labels);
+  SVM.train(data, labels, { kernel: 'linear' });
+};
 
-circle.init();
+clients.getLabel = function(testdata) {
+  var testlabel = SVM.predictOne(testdata);
+  console.log("test label: " + testlabel);
+};
+
+dataset.init();
 
 // go!
 server.listen(app.get('port'), function() {

@@ -1,6 +1,6 @@
 {
     "name": "InfoVis"
-  , "version": "0.0.1"
+  , "version": "0.0.3"
   , "private": true
   , "dependencies": {
       "express": ">= 3.0.4"
@@ -9,5 +9,7 @@
     , "d3": ">= 3.0.0"
     , "now": ">= 0.8.1"
     , "underscore": ">= 1.4.0"
+    , "svm": ">= 0.1.1"
+    , "sugar": ">= 1.3.8"
   }
 }

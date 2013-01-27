@@ -2,32 +2,31 @@
 var data = [];
 
 var viz = d3.select("#viz")
-  .on("mousedown mousemove", mousedownmove)
-  .on("mouseup", mouseup);
+  .on("mouseup", mouseup)
+  .on("mousemove", mousemove);
 
 var color = ["#38A8E8", "#7AB23C", "#E95A00", "#D51E24"];
 var gid = 0;
 
 function enter() {
-  var circles = viz.selectAll("circle").data(data, use("id"));
+  var data_points = viz.selectAll("circle").data(data, p("id"));
 
-  circles.enter() 
+  data_points.enter() 
     .append("circle")
-    .attr("id", use("id"))
+    .attr("id", p("id"))
     .attr("class", "default")
-    .attr("r", 0)
-    .attr("cx", use("x"))
-    .attr("cy", use("y"))
+    .attr("cx", p("x"))
+    .attr("cy", p("y"))
     .style("fill", color[gid])
     .style("fill-opacity", 1)
     .transition()
-    .attr("r", use("value"));
+    .attr("r", p("value"));
 }
  
 function exit() {
-  var circles = viz.selectAll("circle").data(data, use("id"));
+  var data_points = viz.selectAll("circle").data(data, p("id"));
 
-  circles.exit() 
+  data_points.exit() 
     .attr("class", null)
     .style("stroke-opacity", 0)
     .transition()
@@ -39,31 +38,31 @@ function exit() {
 function update() {
   enter();
 
-  var circles = viz.selectAll("circle").data(data, use("id"));
+  var data_points = viz.selectAll("circle").data(data, p("id"));
 
-  circles
+  data_points
     .transition().duration(1)
-    .attr("r", use("value"))
-    .attr("cx", use("x"))
-    .attr("cy", use("y"));
+    .attr("r", p("value"))
+    .attr("cx", p("x"))
+    .attr("cy", p("y"));
 
   exit();
 }
 
 // ***** call from server *****
-now.setData = function(ts, circles) {
-  data = circles;
+now.setData = function(data_points) {
+  data = data_points;
   update();
-  log(ts, data.length + " circles updated");
+  log(data.length + " data points updated");
 };
 
-now.addData = function(ts, entry) {
+now.addData = function(entry) {
   data.push(entry);
   update();
-  log(ts, "circle added, id=" + entry.id);
+  log("circle added, id=" + entry.id);
 };
 
-now.removeData = function (ts, id) {
+now.removeData = function (id) {
   for (var i=0; i<data.length; i++) {
     if (data[i].id == id) {
       data.splice(i, 1);
@@ -71,12 +70,11 @@ now.removeData = function (ts, id) {
     }
   }
   exit();
-  log(ts, "circle removed, id=" + id);
+  log("circle removed, id=" + id);
 };
 // ***** call from server *****
 
 now.ready(function() {
-  now.start();
   d3.select('#reset').on('click', function() { now.reset(); });
   d3.select('#add').on('click', function() { now.add(); });
   d3.select('#shuffle').on('click', function() { now.shuffle(); });
@@ -88,31 +86,33 @@ now.ready(function() {
   d3.select('#red').on('click', function() { gid = 3; });
 
   d3.select('#debug').on('click', function() { 
-    log(new Date().getTime(), gid);
+    var label = now.getLabel([100,100]);
+    log("100,100: " + label);
   });
 
+  now.start();  // go!
 });
 
-function log(ts, msg) {
-  var format = d3.time.format("%X");
-  d3.select('#log').html('['+format(new Date(ts))+"."+ts%1000+'] '+msg);
+function log(msg) {
+  d3.select('#log').html(msg);
 }
 
 // utils
-function use(propName) { 
+function p(propName) { 
   return function(d) { return d[propName]; };
 }
 
-function mousedownmove() {
-  if (!viz) return;
+function mousemove() {
   var x = d3.mouse(this)[0];
   var y = d3.mouse(this)[1];
-  now.add(x, y);
-}
+  // now.getLabel([x,y]);
+  log(x + "," + y);
+};
 
 function mouseup() {
   if (!viz) return;
   var x = d3.mouse(this)[0];
   var y = d3.mouse(this)[1];
-  now.add(x, y);
+  now.add(x, y, gid);
+  now.retrain();
 }
