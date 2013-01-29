@@ -38,41 +38,56 @@ var clients = require('now').initialize(server).now;
 var dataset = require('./model.server').dataset;
 
 clients.start = function() {
-  console.log('init random data: ' + dataset.getSize() + ' entries');
+  // console.log('init random data: ' + dataset.getSize() + ' entries');
   var startingClient = this.now;
   startingClient.setData(dataset.getData());
 }
 
 clients.add = function(x, y, g) {
+  var options = { 
+    host: 'gnavvy.cs.ucdavis.edu', port: 4000, 
+    path: '/add?entry=' + x + ',' + y + ',' + g
+  }
+  var callback = function (res) {
+    res.on('data', function(chunk) {
+      clients.log(""+chunk);
+      console.log(""+chunk);
+    }); 
+  }
+
+  var req = http.request(options, callback);
+  req.end();
+
   var entry = dataset.add(x, y, g);
   clients.addData(entry);
+
   console.log('add new entry @ (' + x + ',' + y + ') of group: ' + g);
 }
 
-clients.remove = function(id) {
-  dataset.remove(id);
-  clients.removeData(id);
-  console.log('remove entry: id = ' + id);
-}
+// clients.remove = function(id) {
+//   dataset.remove(id);
+//   clients.removeData(id);
+//   console.log('remove entry: id = ' + id);
+// }
 
-clients.shuffle = function() {
-  dataset.shuffle();
-  clients.setData(dataset.getData());
-  console.log('shuffle existing data');
-}
+// clients.shuffle = function() {
+//   dataset.shuffle();
+//   clients.setData(dataset.getData());
+//   console.log('shuffle existing data');
+// }
 
-clients.stream = function() {
-  var count = 10;
-  var streamEvent = function () {
-    setTimeout(function() {
-      clients.addData(dataset.add(0, 0));
-      clients.removeData(dataset.removeRandom());
-      if (--count) streamEvent();
-    }, 200);
-  };
-  streamEvent();
-  console.log('streaming new data entries');
-}
+// clients.stream = function() {
+//   var count = 10;
+//   var streamEvent = function () {
+//     setTimeout(function() {
+//       clients.addData(dataset.add(0, 0));
+//       clients.removeData(dataset.removeRandom());
+//       if (--count) streamEvent();
+//     }, 200);
+//   };
+//   streamEvent();
+//   console.log('streaming new data entries');
+// }
 
 clients.reset = function() {
   dataset.init();
@@ -80,20 +95,16 @@ clients.reset = function() {
   console.log('reset data');
 }
 
-var svm = require("svm");
-var SVM = new svm.SVM();
 clients.retrain = function() {
-  var data = dataset.getData();
-  console.log(data);
-  var labels = dataset.getLabels();
-  console.log(labels);
-  SVM.train(data, labels, { kernel: 'linear' });
-};
-
-clients.getLabel = function(testdata) {
-  var testlabel = SVM.predictOne(testdata);
-  console.log("test label: " + testlabel);
-};
+  var opt = { host: 'gnavvy.cs.ucdavis.edu', port: 4000, path: '/retrain' }
+  var req = http.get(opt, function (res) {
+    res.on('data', function(chunk) {
+      clients.log(""+chunk);
+      console.log(""+chunk);
+    }); 
+  })
+  req.end();
+}
 
 dataset.init();
 

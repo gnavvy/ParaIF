@@ -14,20 +14,15 @@ exports.dataset = {
 	},
   init: function() {
     this.data = [];
-    this.add(0, 0, 0);
+    // this.add(0, 0, 0);
   },
   add: function(x, y, g) {
-    var gg = 0;
-    if (g == 0) { gg = -1; }
-    else { gg = 1; }
-
     var entry = {
       id: _.uniqueId(),
       x: x || _.random(10,this.boundary[0]-10),
       y: y || _.random(10,this.boundary[1]-10),
       value: 8,
-      group: g,
-      label: gg
+      group: g
     };
     this.data.push(entry);
     return entry;

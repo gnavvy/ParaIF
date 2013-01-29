@@ -62,7 +62,7 @@ now.addData = function(entry) {
   log("circle added, id=" + entry.id);
 };
 
-now.removeData = function (id) {
+now.removeData = function(id) {
   for (var i=0; i<data.length; i++) {
     if (data[i].id == id) {
       data.splice(i, 1);
@@ -72,6 +72,10 @@ now.removeData = function (id) {
   exit();
   log("circle removed, id=" + id);
 };
+
+now.log = function(msg) {
+  log(msg);
+}
 // ***** call from server *****
 
 now.ready(function() {
@@ -79,6 +83,7 @@ now.ready(function() {
   d3.select('#add').on('click', function() { now.add(); });
   d3.select('#shuffle').on('click', function() { now.shuffle(); });
   d3.select('#stream').on('click', function() { now.stream(); });
+  d3.select('#retrain').on('click', function() { now.retrain(); });
 
   d3.select('#blue').on('click', function() { gid = 0; });
   d3.select('#green').on('click', function() { gid = 1; });
@@ -86,8 +91,8 @@ now.ready(function() {
   d3.select('#red').on('click', function() { gid = 3; });
 
   d3.select('#debug').on('click', function() { 
-    var label = now.getLabel([100,100]);
-    log("100,100: " + label);
+    // var label = now.getLabel([100,100]);
+    // log("100,100: " + label);
   });
 
   now.start();  // go!
@@ -106,7 +111,7 @@ function mousemove() {
   var x = d3.mouse(this)[0];
   var y = d3.mouse(this)[1];
   // now.getLabel([x,y]);
-  log(x + "," + y);
+  // log(x + "," + y);
 };
 
 function mouseup() {
@@ -114,5 +119,4 @@ function mouseup() {
   var x = d3.mouse(this)[0];
   var y = d3.mouse(this)[1];
   now.add(x, y, gid);
-  now.retrain();
 }
