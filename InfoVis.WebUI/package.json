@@ -9,7 +9,6 @@
     , "d3": ">= 3.0.0"
     , "now": ">= 0.8.1"
     , "underscore": ">= 1.4.0"
-    , "dnode": "*"
-    , "jsonrpc": "*"
+    , "underscore.string": ">= 2.3.1"
   }
 }

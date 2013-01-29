@@ -1,6 +1,8 @@
 import cherrypy
 from cherrypy import expose
 from sklearn import svm
+import numpy as np
+import pylab as pl
 
 class Classifier:
     classifier = svm.SVC(kernel='linear')
@@ -17,6 +19,12 @@ class Classifier:
         return "Hello World!"
 
     @expose
+    def reset(self):
+        self.x_train = []
+        self.y_train = []
+        return "reset"
+
+    @expose
     def add(self, entry):
         print("entry: " + entry)
         numbs = self.format(entry)
@@ -31,7 +39,8 @@ class Classifier:
     def retrain(self):
         print(self.x_train, self.y_train)
         self.classifier.fit(self.x_train, self.y_train)
-        return "retrained"
+        sv = self.classifier.support_vectors_
+        return str(sv)
 
     @expose
     def test(self, entry):
@@ -44,11 +53,13 @@ class Classifier:
     @expose
     def testRect(self, rect):
         result = []
-        print("testRect rect:", rect)
-        for x in range(0, rect[0]):
-            for y in range(0, rect[1]):
-                result.append(self.classifier.predict([x,y])[0])
-        return result
+        numbs = self.format(rect)
+        print("testRect numbs:", numbs)
+        for x in range(0, numbs[0], 10):
+            for y in range(0, numbs[1], 10):
+                dec = self.classifier.predict([x,y])[0]
+                result.append(dec)
+        return str(result)
 
 cherrypy.server.socket_host = 'gnavvy.cs.ucdavis.edu'
 cherrypy.server.socket_port = 4000

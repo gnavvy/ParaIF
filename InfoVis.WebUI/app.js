@@ -1,10 +1,11 @@
 var express = require('express')
   , routes = require('./routes')
-  , http = require('http');
+  , http = require('http')
+  , _ = require('underscore');
+  _.str = require('underscore.string');
 var app = module.exports = express();
 
-// Configuration
-app.configure(function(){
+app.configure( function() {
   app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
@@ -30,33 +31,25 @@ app.get('/critique', routes.critique);
 app.get('/d3js', routes.d3js);
 
 var server = http.createServer(app);
-
-// now.js setup
 var clients = require('now').initialize(server).now;
-
-// model
 var dataset = require('./model.server').dataset;
+var maskset = require('./model.server').maskset;
 
 clients.start = function() {
-  // console.log('init random data: ' + dataset.getSize() + ' entries');
   var startingClient = this.now;
   startingClient.setData(dataset.getData());
 }
 
 clients.add = function(x, y, g) {
-  var options = { 
-    host: 'gnavvy.cs.ucdavis.edu', port: 4000, 
+  var opt = { host: 'gnavvy.cs.ucdavis.edu', port: 4000,
     path: '/add?entry=' + x + ',' + y + ',' + g
   }
-  var callback = function (res) {
+  var req = http.get(opt, function (res) {
     res.on('data', function(chunk) {
       clients.log(""+chunk);
       console.log(""+chunk);
     }); 
-  }
-
-  var req = http.request(options, callback);
-  req.end();
+  }); req.end();
 
   var entry = dataset.add(x, y, g);
   clients.addData(entry);
@@ -64,33 +57,16 @@ clients.add = function(x, y, g) {
   console.log('add new entry @ (' + x + ',' + y + ') of group: ' + g);
 }
 
-// clients.remove = function(id) {
-//   dataset.remove(id);
-//   clients.removeData(id);
-//   console.log('remove entry: id = ' + id);
-// }
-
-// clients.shuffle = function() {
-//   dataset.shuffle();
-//   clients.setData(dataset.getData());
-//   console.log('shuffle existing data');
-// }
-
-// clients.stream = function() {
-//   var count = 10;
-//   var streamEvent = function () {
-//     setTimeout(function() {
-//       clients.addData(dataset.add(0, 0));
-//       clients.removeData(dataset.removeRandom());
-//       if (--count) streamEvent();
-//     }, 200);
-//   };
-//   streamEvent();
-//   console.log('streaming new data entries');
-// }
-
 clients.reset = function() {
-  dataset.init();
+  var opt = { host: 'gnavvy.cs.ucdavis.edu', port: 4000, path: '/reset' }
+  var req = http.get(opt, function (res) {
+    res.on('data', function(chunk) {
+      clients.log(""+chunk);
+      console.log(""+chunk);
+    }); 
+  }); req.end();
+
+  dataset.reset();
   clients.setData(dataset.getData());
   console.log('reset data');
 }
@@ -102,11 +78,25 @@ clients.retrain = function() {
       clients.log(""+chunk);
       console.log(""+chunk);
     }); 
-  })
-  req.end();
+  }); req.end();
 }
 
-dataset.init();
+clients.test = function() {
+  var opt = { host: 'gnavvy.cs.ucdavis.edu', port: 4000,
+    path: '/testRect?rect=800,500'
+  }
+  var req = http.get(opt, function (res) {
+    res.on('data', function(chunk) {
+      console.log(""+chunk);
+      var chars = _.str.words(chunk, ', ');
+      var mask = _.map(chars, function (char) { return parseInt(char); })
+      maskset.fillMask(mask);
+      clients.setMask(maskset.getMask());
+    }); 
+  }); req.end();
+}
+
+clients.reset();
 
 // go!
 server.listen(app.get('port'), function() {
