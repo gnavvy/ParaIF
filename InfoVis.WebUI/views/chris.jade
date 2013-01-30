@@ -1,0 +1,218 @@
+!!! 5
+html
+  head
+    meta(charset='utf-8')
+    title Ball Path
+    script(src='http://d3js.org/d3.v3.min.js')
+    style(type='text/css')
+      .axis path,
+      .axis line {
+      fill: none;
+      stroke: black;
+      shape-rendering: crispEdges;
+      }
+      .axis text {
+      font-family: sans-serif;
+      font-size: 11px;
+      }
+      .swing_line {
+      fill: none;
+      stroke: black;
+      stroke-width: 2px;
+      }
+      circle.flowingcircle {
+      fill: green;
+      }
+  body
+    script(type='text/javascript')
+      // declarations
+      var padding = 30;
+      var w = document.body.offsetWidth;
+      var h = window.innerHeight - padding * 2;
+      var n = 10;
+      var t = 0;
+      var dt = 0;
+      var color;
+      var mouseX;
+      var size_range = [h / 100, h / 10];
+      var dragging = false;
+      var freeze = false;
+      // data
+      var data = []
+      for (var i = 0; i < n + 3; ++i) {
+      data.push(Math.random() * 2 - 1)
+      }
+      // scale
+      var xScale = d3.scale.linear().domain([1, n - 1]).range([0, w])
+      var yScale = d3.scale.linear().domain([-0.5, 0.5]).range([-0.5 * h / 2 + padding, 0.5 * h / 2 - padding])
+      var speedScale = d3.scale.linear().domain(size_range).range([10, 1]);
+      var sizeScale = d3.scale.linear().domain([0, 1]).range(size_range);
+      // path generator
+      var line = d3.svg.line()
+      .x(function(d, i) {return xScale(i);})
+      .y(function(d, i) {return yScale(d);})
+      .interpolate("basis")
+      // svg area
+      var svg = d3.select('body').append('svg')
+      .attr('id', 'svg')
+      .attr('width', w)
+      .attr('height', h)
+      // g
+      var g = svg.append('g')
+      .attr('transform', 'translate(0,' + h / 2 + ')')
+      .attr('id', 'line_id')
+      // draw the line
+      var polyline = g.append('path')
+      .datum(data)
+      .attr('class', 'swing_line')
+      .attr('d', line)
+      animatePolyline();
+      function animatePolyline() {
+      data.push(Math.random() * 2 - 1);
+      polyline.attr('d', line)
+      g.attr('transform', 'translate(0,' + h / 2 + ')')
+      .transition()
+      .duration(1000)
+      .ease("linear")
+      .attr('transform', "translate(" + xScale(0) + ',' + h / 2 + ")")
+      .each('end', animatePolyline)
+      data.shift();
+      }
+      // draw a cirlce
+      var circle = g.append('circle')
+      .attr('r', 5)
+      .attr('fill', 'teal')
+      // function getPointOnPath
+      function getPosOnPath(x) {
+      var pathEl = polyline.node();
+      var pathLength = pathEl.getTotalLength();
+      var bbox = pathEl.getBBox();
+      var beginning = x, end = pathLength, target;
+      while (true) {
+      target = Math.floor((beginning + end) / 2)
+      pos = pathEl.getPointAtLength(target)
+      if ((target === end || target === beginning) && pos.x !== x) {
+      break;
+      }
+      if (pos.x > x) {
+      end = target;
+      } else if (pos.x < x) {
+      beginning = target;
+      } else {
+      break;
+      }
+      }
+      return pos;
+      }
+      var circles = [];
+      function getGTranslate() {
+      var matrix = g.node().getTransformToElement(g.node().nearestViewportElement)
+      var p = g.node().nearestViewportElement.createSVGPoint()
+      var sp = p.matrixTransform(matrix)
+      return sp;
+      }
+      function trackMouse() {
+      var sp = getGTranslate()
+      var x = mouseX - document.getElementById('svg').offsetLeft - sp.x
+      var pos = getPosOnPath(x);
+      circle.attr('opacity', 0.5)
+      .attr('cx', pos.x)
+      .attr('cy', pos.y)
+      }
+      function getPathPosByScreenX(x) {
+      var sp = getGTranslate()
+      var xx = x - document.getElementById('svg').offsetLeft - sp.x
+      return getPosOnPath(xx)
+      }
+      // mouseover
+      svg.on('mousemove', function() {
+      mouseX = d3.event.pageX;
+      })
+      // mousedown
+      svg.on('click', function() {
+      spawnCircle(mouseX);
+      })
+      function spawnCircle(x) {
+      randomColor();
+      circles.push({
+      'length': x,
+      'color': color,
+      'size': sizeScale(Math.random()),
+      'pos': getPathPosByScreenX(x)
+      });
+      }
+      // timer
+      d3.timer(function(elapsed) {
+      dt = elapsed - t;
+      t = elapsed;
+      if (!dragging && !freeze)
+      render();
+      })
+      function render() {
+      trackMouse();
+      var rand = Math.random();
+      if (rand > 0.95 && circles.length < 20) {
+      spawnCircle(-size_range[1]);
+      }
+      updateCircleLengths();
+      updateCirclePositions();
+      drawCircles();
+      }
+      function randomColor() {
+      var h = Math.random() * 360;
+      color = d3.hsl(h, 1, 0.5);
+      }
+      // Array Remove - By John Resig (MIT Licensed)
+      Array.prototype.remove = function(from, to) {
+      var rest = this.slice((to || from) + 1 || this.length);
+      this.length = from < 0 ? this.length + from : from;
+      return this.push.apply(this, rest);
+      };
+      function updateCircleLengths() {
+      for (var i = 0; i < circles.length; ++i) {
+      while (i < circles.length) {
+      var elapsedpixels = speedScale(circles[i].size) * w / 800
+      circles[i].length = circles[i].length + elapsedpixels;
+      if (circles[i].length > w + size_range[1])
+      circles.remove(i)
+      else
+      break;
+      }
+      }
+      }
+      function updateCirclePositions() {
+      for (var i = 0; i < circles.length; ++i) {
+      var target = getPathPosByScreenX(circles[i].length);
+      circles[i].pos = target;
+      }
+      }
+      var drag = d3.behavior.drag()
+      .on('dragstart', function(d, i) {
+      dragging = true;
+      })
+      .on('drag', function(d, i) {
+      d.length = d3.event.x;
+      })
+      .on('dragend', function(d, i) {
+      dragging = false;
+      })
+      function drawCircles() {
+      var flowingcircles = g.selectAll('.flowingcircle')
+      .data(circles)
+      flowingcircles.enter().append('circle')
+      //.call(drag)
+      flowingcircles.exit().remove();
+      flowingcircles
+      .attr('class', 'flowingcircle')
+      .attr('r', function(d) {return d.size;})
+      .attr('cx', function(d) {
+      return d.pos.x;
+      })
+      .attr('cy', function(d) {
+      return d.pos.y;
+      })
+      .attr('opacity', 0.5)
+      .style('fill', function(d) {
+      return d.color;
+      })
+      }

@@ -29,6 +29,7 @@ app.configure('production', function(){
 app.get('/', routes.index);
 app.get('/critique', routes.critique);
 app.get('/d3js', routes.d3js);
+app.get('/chris', routes.chris);
 
 var server = http.createServer(app);
 var clients = require('now').initialize(server).now;
@@ -67,7 +68,9 @@ clients.reset = function() {
   }); req.end();
 
   dataset.reset();
+  maskset.reset();
   clients.setData(dataset.getData());
+  clients.setMask(maskset.getMask());
   console.log('reset data');
 }
 
@@ -87,7 +90,6 @@ clients.test = function() {
   }
   var req = http.get(opt, function (res) {
     res.on('data', function(chunk) {
-      console.log(""+chunk);
       var chars = _.str.words(chunk, ', ');
       var mask = _.map(chars, function (char) { return parseInt(char); })
       maskset.fillMask(mask);

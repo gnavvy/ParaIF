@@ -14,3 +14,7 @@ exports.critique = function(req, res) {
 exports.d3js = function(req, res) {
 	res.render('d3js', { title: 'd3.js Practice' })
 };
+
+exports.chris = function(req, res) {
+	res.render('chris', { title: 'd3.js Practice' })
+};
