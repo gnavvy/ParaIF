@@ -11,8 +11,8 @@ exports.critique = function(req, res) {
 	res.render('critique', { title: 'Visualization Critique' })
 };
 
-exports.d3js = function(req, res) {
-	res.render('d3js', { title: 'd3.js Practice' })
+exports.svm = function(req, res) {
+	res.render('svm', { title: 'SVM Visualization' })
 };
 
 exports.chris = function(req, res) {

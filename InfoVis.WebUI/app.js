@@ -14,7 +14,7 @@ app.configure( function() {
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
-  app.use(express.static(__dirname + '/public'));
+  app.use(express.static(__dirname + '/views'));
 });
 
 app.configure('development', function(){
@@ -28,77 +28,46 @@ app.configure('production', function(){
 // Routes
 app.get('/', routes.index);
 app.get('/critique', routes.critique);
-app.get('/d3js', routes.d3js);
 app.get('/chris', routes.chris);
+app.get('/svm', routes.svm);
 
 var server = http.createServer(app);
 var clients = require('now').initialize(server).now;
-var dataset = require('./model.server').dataset;
-var maskset = require('./model.server').maskset;
+var network = require('./models/network.server').network;
 
 clients.start = function() {
   var startingClient = this.now;
-  startingClient.setData(dataset.getData());
-}
-
-clients.add = function(x, y, g) {
-  var opt = { host: 'gnavvy.cs.ucdavis.edu', port: 4000,
-    path: '/add?entry=' + x + ',' + y + ',' + g
-  }
-  var req = http.get(opt, function (res) {
-    res.on('data', function(chunk) {
-      clients.log(""+chunk);
-      console.log(""+chunk);
-    }); 
-  }); req.end();
-
-  var entry = dataset.add(x, y, g);
-  clients.addData(entry);
-
-  console.log('add new entry @ (' + x + ',' + y + ') of group: ' + g);
+  clients.reset();
 }
 
 clients.reset = function() {
-  var opt = { host: 'gnavvy.cs.ucdavis.edu', port: 4000, path: '/reset' }
-  var req = http.get(opt, function (res) {
-    res.on('data', function(chunk) {
-      clients.log(""+chunk);
-      console.log(""+chunk);
-    }); 
-  }); req.end();
+  console.log('get data start');
+  
+  var opt_node = { host: 'gnavvy.cs.ucdavis.edu', port: 4000, path: '/getNodes' }
+  var req_node = http.get(opt_node, function (res) {
+    var data = '';
+    res.on('data', function(chunk) { data += chunk; });
+    res.on('end', function() {
+      network.setNodes(JSON.parse(data));
+      console.log('get nodes done');
 
-  dataset.reset();
-  maskset.reset();
-  clients.setData(dataset.getData());
-  clients.setMask(maskset.getMask());
-  console.log('reset data');
+      // get edges after nodes are received
+      var opt_edge = { host: 'gnavvy.cs.ucdavis.edu', port: 4000, path: '/getEdges' }
+      var req_edge = http.get(opt_edge, function (res) {
+        data = '';
+        res.on('data', function(chunk) { data += chunk; });
+        res.on('end', function() {
+          network.setEdges(JSON.parse(data));               
+          console.log('get edges done');
+
+          network.normalize();
+          clients.setNodes(network.getNodes());
+          clients.setEdges(network.getEdges());
+        });
+      });
+    });
+  });
 }
-
-clients.retrain = function() {
-  var opt = { host: 'gnavvy.cs.ucdavis.edu', port: 4000, path: '/retrain' }
-  var req = http.get(opt, function (res) {
-    res.on('data', function(chunk) {
-      clients.log(""+chunk);
-      console.log(""+chunk);
-    }); 
-  }); req.end();
-}
-
-clients.test = function() {
-  var opt = { host: 'gnavvy.cs.ucdavis.edu', port: 4000,
-    path: '/testRect?rect=800,500'
-  }
-  var req = http.get(opt, function (res) {
-    res.on('data', function(chunk) {
-      var chars = _.str.words(chunk, ', ');
-      var mask = _.map(chars, function (char) { return parseInt(char); })
-      maskset.fillMask(mask);
-      clients.setMask(maskset.getMask());
-    }); 
-  }); req.end();
-}
-
-clients.reset();
 
 // go!
 server.listen(app.get('port'), function() {

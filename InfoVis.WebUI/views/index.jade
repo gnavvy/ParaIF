@@ -2,34 +2,30 @@ extends layout
 
 //- local js, only used in this page
 block scripts
-  script(src="/lib/d3.v3.min.js")
+  //- script(src="/lib/d3.v3.min.js")
+  script(src="/lib/d3.v3.js")
   script(src="/lib/underscore-min.js")
   script(src="/lib/now.js")
-  script(src="/model.client.js")
+  script(src="/js/network.client.js")
 
 block content
-  h3 Collaborative SVM Visualization
-
+  h3 Graph Manipulation
   div.row-fluid
     div.span3
-      button.btn.btn-primary#blue
-      button.btn.btn-success#green
-      button.btn.btn-warning#orange
-      button.btn.btn-danger#red
-    div.span4.btn-group
-      button.btn.btn-primary#blue Linear
-      button.btn#green Rbf
-      button.btn#orange Polynomial
+      //- button.btn.btn-primary#blue
+      //- button.btn.btn-success#green
+      //- button.btn.btn-warning#orange
+      //- button.btn.btn-danger#red
     div.span4
-      button.btn.btn-primary#retrain (Re)train Data
+      //- .btn-group
+      //- button.btn.btn-primary#blue Linear
+      //- button.btn#green Rbf
+      //- button.btn#orange Polynomial
+    div.span4
+      //- button.btn.btn-primary#retrain (Re)train Data
       button.btn.btn-primary#plot Plot 
       button.btn.btn-success#reset Reset
-    br
     svg#viz
     br
     span#log
-    br
-    br
-    img(src='/img/d3.png')
-  
   

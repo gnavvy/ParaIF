@@ -56,3 +56,8 @@ exports.maskset = {
     this.mask = [];
   },
 };
+
+exports.graph = {
+  nodes:[],
+  edges:[]
+};

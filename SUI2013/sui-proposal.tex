@@ -1,0 +1,77 @@
+\documentclass{acm_proc_article-sp}
+
+\begin{document}
+
+\title{SUI-Friendly Self-Organizing Graph Layout}
+\subtitle{ECS272 Term Project Proposal}
+\numberofauthors{1}
+\author{
+\alignauthor
+Yang Wang \\
+       % \titlenote{} \\
+       \affaddr{Visualization \& Interface Design Innovation Research Group} \\
+       \affaddr{Computer Science Department} \\
+       \affaddr{University of California, Davis} \\
+       \email{ywang@ucdavis.edu}
+}
+\maketitle
+
+\begin{abstract}
+TBD
+%what you are going to work on, why, datasets, technical approach, and what you expect to produce. 
+%It will be the best if you also show your knowledge about related works. 
+\end{abstract}
+
+\category{TBD}{TBD}{TBD}
+\terms{TBD}
+
+\section{Introduction}
+
+Due to the advances in sensing technologies, consumer affordable 3D sensors with spatial interaction capabilities spring up. However, the advantages of taking in the 3rd dimension as human-computer interfaces is still not well understood: Traditional mouse-like interfaces are already capable of providing users with precise control over the cursor, and perceptually users are accustomed to 2D interfaces. Therefore, how to effectively utilize the spatial interfaces while maintaining their intuitiveness remains a hot topic.
+
+This term project will be focusing on this topic, and try to incorporate spatial user interfaces into some well defined graph manipulation tasks, such as selecting subgraphs, change global layouts, merging and splitting nodes, etc. Instead of following the routine of interpreting spatial movement into a 2D cursor coordinate, natural human gesture and postures will be used as control signals. Another goal is to present visual elements in a way that is easy to manipulate via spatial user interfaces while preserving feature characteristics, such as pairwise distance relations, at the meantime. To achieve this goal, self-organizing graph layout algorithms will be studied. 
+
+The implementation will be tested first on small scale synthetic dataset, and then on the Stanford Large Network Datasets(http://snap.stanford.edu/data/). The outcome of the project will also include a collaborative visualization system (the framework is 80\% done) with loosely coupled modules. The system will takes any sorts of the interaction as input, passing them under predefined manipulation protocols, and process the data and logic in the back-end server. This Model-View-Control  structure enables collaborative visualization tasks, which means multiple users can interactive with the system simultaneously, either side by side or remotely, and the requests could be processed asynchronously. 
+
+\section{Related Work}
+TBD
+% \cite{Lamport:LaTeX}
+
+\section{Technical Approach}
+
+Existing self-organizing graph layout algorithms tend to find certain similarity measures to mine hidden information within the data. And then to apply these measures to a force based layout algorithm to visualize the data. In this project the capability of spatial interface will also be considered. Given the visualization result at certain timestamps, pattern matching could be used to select sub-graphs and gestures for merging and splitting clusters could be taken in as constraint to refine the clustering results.
+
+One of the advantages of spatial interfaces is that it can provide movement information, in different directions easily. Leveraging this property, force-based visualizations could layout in the way that edges for each nodes are evenly spread over all directions. This will helps reduce the number of candidates for each gesture movements.
+
+TBD
+
+\section{System Design}
+TBD
+
+\section{Result}
+TBD
+
+\section{Conclusions}
+TBD
+
+%ACKNOWLEDGMENTS are optional
+\section{Acknowledgments}
+TBD
+
+%
+% The following two commands are all you need in the
+% initial runs of your .tex file to
+% produce the bibliography for the citations in your paper.
+\bibliographystyle{abbrv}
+\bibliography{sigproc}  % sigproc.bib is the name of the Bibliography in this case
+% You must have a proper ".bib" file
+%  and remember to run:
+% latex bibtex latex latex
+% to resolve all references
+%
+% ACM needs 'a single self-contained file'!
+%
+%APPENDICES are optional
+%\balancecolumns
+
+\end{document}
