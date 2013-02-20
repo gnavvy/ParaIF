@@ -1,6 +1,6 @@
 {
-    "name": "InfoVis"
-  , "version": "0.0.3"
+    "name": "ParaIF.SUI"
+  , "version": "0.0.4"
   , "private": true
   , "dependencies": {
       "express": ">= 3.0.4"

@@ -2,14 +2,14 @@ extends layout
 
 //- local js, only used in this page
 block scripts
-  //- script(src="/lib/d3.v3.min.js")
-  script(src="/lib/d3.v3.js")
-  script(src="/lib/underscore-min.js")
+  script(src="/lib/d3.v3.min.js")
+  //- script(src="/lib/d3.v3.js")
+  //- script(src="/lib/underscore-min.js")
   script(src="/lib/now.js")
   script(src="/js/network.client.js")
 
 block content
-  h3 Graph Manipulation
+  h3 Guesture-based Graph Manipulation
   div.row-fluid
     div.span3
       //- button.btn.btn-primary#blue
@@ -27,5 +27,4 @@ block content
       button.btn.btn-success#reset Reset
     svg#viz
     br
-    span#log
-  
+    span#log  
