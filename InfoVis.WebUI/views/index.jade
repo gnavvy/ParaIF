@@ -1,30 +1,25 @@
 extends layout
 
-//- local js, only used in this page
+// local js, only used in this page
 block scripts
-  script(src="/lib/d3.v3.min.js")
-  //- script(src="/lib/d3.v3.js")
-  //- script(src="/lib/underscore-min.js")
-  script(src="/lib/now.js")
-  script(src="/js/network.client.js")
+    script(src="/lib/d3.v3.min.js")
+    script(src="/lib/now.js")
+    script(src="/js/network.client.js")
 
 block content
-  h3 Guesture-based Graph Manipulation
-  div.row-fluid
-    div.span3
-      //- button.btn.btn-primary#blue
-      //- button.btn.btn-success#green
-      //- button.btn.btn-warning#orange
-      //- button.btn.btn-danger#red
-    div.span4
-      //- .btn-group
-      //- button.btn.btn-primary#blue Linear
-      //- button.btn#green Rbf
-      //- button.btn#orange Polynomial
-    div.span4
-      //- button.btn.btn-primary#retrain (Re)train Data
-      button.btn.btn-primary#plot Plot 
-      button.btn.btn-success#reset Reset
-    svg#viz
-    br
-    span#log  
+    h3 Guesture-based Graph Manipulation
+    div.row-fluid
+        div.span2.btn-group
+            button.btn.btn-warning#deg7 Deg 7
+            button.btn.btn-primary#deg19 Deg 19
+        div.span3.btn-group
+            button.btn.btn-primary#order1 1
+            button.btn.btn-primary#order2 2
+            button.btn.btn-warning#order3 3
+            button.btn.btn-primary#order4 4
+            button.btn.btn-primary#order5 5
+            button.btn.btn-primary#order6 6
+        div.span1
+            button.btn.btn-success#plot Plot
+        span#log
+        svg#viz

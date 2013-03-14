@@ -1,8 +1,8 @@
 var _nodes = [];
 var _edges = [];
-var _auxil = [];
+var _d = 19, _o = 4;
 
-var w = 900, h = 900, r = 5;
+var w = 900, h = 900, r = 3;
 var color = d3.scale.category10();
 //var scheme0 = d3.interpolateHsl('rgb(255, 64, 64)', 'rgb( 64,255, 64)');
 //var scheme1 = d3.interpolateHsl('rgb(255,128,128)', 'rgb(128,255,128)');
@@ -15,60 +15,26 @@ var force = d3.layout.force()
     .size([w, h]);
 //    .on("tick", tick);
 
-var viz = d3.select("#viz")
-    .attr("width", w)
-    .attr("height", h)
-    .on("mouseup", mouseup)
-    .on("mousemove", mousemove);
+var viz = d3.select("#viz").attr("width", w).attr("height", h);
+//    .on("mouseup", mouseup)
+//    .on("mousemove", mousemove);
 
-var bundle = d3.layout.bundle();
-var line = d3.svg.line.radial()
-    .interpolate("bundle")
-    .tension(.85)
-    .radius(function(d) { return d.y; })
-    .angle(function(d) { return d.x / 180 * Math.PI; });
+//var bundle = d3.layout.bundle();
+//var line = d3.svg.line.radial()
+//    .interpolate("bundle")
+//    .tension(.85)
+//    .radius(function(d) { return d.y; })
+//    .angle(function(d) { return d.x / 180 * Math.PI; });
 
 // ***** call from server *****
 now.setNodes = function (nodes) { _nodes = nodes; };
 now.setEdges = function(edges) { _edges = edges; };
-now.setAuxil = function(points) { _auxil = points; };
+now.update = function() { update(); };
 now.log = function(msg) { log(msg); };
 // ***** call from server *****
 
 function update() {
     plot();
-//    auxil();
-}
-
-function auxil() {
-    log("auxil start");
-
-    viz.selectAll(".au").data(_auxil)
-        .enter().append("circle")
-        .attr("class", "node")
-        .attr("r", r);
-//        .style("fill", ""function(d) {
-//            return d.group == -1 ? "grey" : color(d.group);
-//        })
-
-    force.nodes(_nodes).links(_edges).start();
-
-    viz.selectAll(".link").data(_edges)
-        .enter().append("svg:line")
-        .attr("class", "link")
-        .style("stroke", "lightgrey")
-        .style("stroke-width", 1.0);
-
-    viz.selectAll(".node").data(_nodes)
-        .enter().append("circle")
-        .attr("class", "node")
-        .attr("r", r)
-        .style("fill", function(d) {
-            return d.group == -1 ? "grey" : color(d.group);
-        })
-        .call(force.drag);
-
-    log("auxil done");
 }
 
 function plot() {
@@ -86,25 +52,6 @@ function plot() {
         })
         .style("stroke-width", 0.05);
 
-//    viz.selectAll(".link").data(bundle(_edges))
-//        .enter().append("path")
-////        .attr("x1", function(edge) { return edge.source.x; })
-////        .attr("y1", function(edge) { return edge.source.y; })
-////        .attr("x2", function(edge) { return edge.target.x; })
-////        .attr("y2", function(edge) { return edge.target.y; })
-//        .attr("class", "link")
-//        .attr("d", line)
-//        .style("stroke", function(edge) {
-//            return edge.source.group == -1 ? "gray" : color(edge.source.group);
-//        });
-////        .style("stroke-width", 0.05);
-
-//    svg.selectAll(".link")
-//        .data(bundle(links))
-//        .enter().append("path")
-//        .attr("class", "link")
-//        .attr("d", line);
-
     viz.selectAll(".node").data(_nodes)
         .enter().append("circle")
         .attr("cx", function(node) { return node.x; })
@@ -113,8 +60,8 @@ function plot() {
         .attr("r", r)
         .style("fill", function(node) {
             return node.group == -1 ? "gray" : color(node.group);
-        })
-        .call(force.drag);
+        });
+//        .call(force.drag);
 }
 
 function tick() {
@@ -130,9 +77,16 @@ function tick() {
 }
 
 now.ready(function() {
-    d3.select('#reset').on('click', function() { now.reset(); });
+    log('ready to start');
+    d3.select('#deg7').on('click', function() { _d = 7; now.reset(_d, _o); });
+    d3.select('#deg19').on('click', function() { _d = 19; now.reset(_d, _o); });
+    d3.select('#order1').on('click', function() { _o = 1; now.reset(_d, _o); });
+    d3.select('#order2').on('click', function() { _o = 2; now.reset(_d, _o); });
+    d3.select('#order3').on('click', function() { _o = 3; now.reset(_d, _o); });
+    d3.select('#order4').on('click', function() { _o = 4; now.reset(_d, _o); });
+    d3.select('#order5').on('click', function() { _o = 5; now.reset(_d, _o); });
+    d3.select('#order6').on('click', function() { _o = 6; now.reset(_d, _o); });
     d3.select('#plot').on('click', function() { update(); });
-
     now.start();  // go!
 });
 
@@ -140,16 +94,16 @@ function log(msg) {
     d3.select('#log').html(msg);
 }
 
-function mousemove() {
+//function mousemove() {
     // var x = d3.mouse(this)[0];
     // var y = d3.mouse(this)[1];
     // now.getLabel([x,y]);
     // log(x + "," + y);
-}
+//}
 
-function mouseup() {
+//function mouseup() {
     // if (!viz) return;
     // var x = d3.mouse(this)[0];
     // var y = d3.mouse(this)[1];
     // now.add(x, y, gid);
-}
+//}

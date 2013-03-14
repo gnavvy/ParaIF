@@ -3,7 +3,7 @@ __author__ = 'Yang'
 import collections
 import scipy as sp
 from scipy import linalg as la
-from sklearn.cluster import *
+from sklearn.cluster import Ward, SpectralClustering
 
 
 class Cluster:
@@ -86,6 +86,10 @@ class Cluster:
         return clustering.fit_predict(sp.array(self.A))
         # spt.fit(sp.array(self.A))
         # return spt.labels_
+
+    def hierachical(self, n_clusters):
+        ward = Ward(n_clusters=n_clusters)
+        return ward.fit_predict(sp.array(self.A))
 
 if __name__ == "__main__":
     sp.set_printoptions(precision=2, suppress=True)

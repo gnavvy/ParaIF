@@ -1,10 +1,10 @@
 button {
-    margin-right: 16px;
+    /*margin-right: 16px;*/
 }
 
 #viz {
-    margin-top: 16px;
-    /*border: 1px solid #3AA9E8;*/
+    margin-top: 12px;
+    border: 1px solid #3AA9E8;
 }
 
 #log {
@@ -12,7 +12,7 @@ button {
 }
 
 circle:hover {
-    stroke-width: 1;
-	stroke: #666;
-    cursor: pointer;
+    /*stroke-width: 1;*/
+	/*stroke: #666;*/
+    /*cursor: pointer;*/
 }
