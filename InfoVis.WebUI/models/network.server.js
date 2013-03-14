@@ -5,6 +5,7 @@ exports.network = {
     nodes: [],
     edges: [],
     alias: {},
+    islands : { 12: [1, 2, 3, 18, 17, 16, 15, 14, 13, 12, 11, 0]},
     getNodes: function() {
         console.log("#nodes: " + this.nodes.length);
         return this.nodes;
@@ -19,21 +20,19 @@ exports.network = {
     setEdges: function(edges) {
         this.edges = edges;
     },
-    preprocess: function(degree, order) {
-        var segLengths = {};
-        for (var k = 0; k < this.nodes.length; k++) {
-            var g = this.nodes[k].group;
-            if (g in segLengths) {
-                segLengths[g]++;
-            } else {
-                segLengths[g] = 1;
-            }
-        }
-        console.log(segLengths);
+    preprocess: function(degree, order, n_cluster) {
+//        var clusterPerIsland = parseInt(Math.ceil(n_cluster/degree));
+        var lengthPerSegment = _.countBy(this.nodes, function(n) {
+            return n.group;
+        });
+        console.log(lengthPerSegment);
+//        console.log('clusterPerIsland: ' + clusterPerIsland);
         var global_id = 0;
-        for (var seg in segLengths) {
-            var offset = seg / degree;
-            var length = segLengths[seg];
+        for (var seg in lengthPerSegment) {
+            var offset = this.islands[n_cluster][seg] / degree;
+//            if (seg >= 2) offset += 1 / degree;
+//            if (seg >= 4) offset += 7 / degree;
+            var length = lengthPerSegment[seg];
             var span = (1 / degree) / (length - 1);
             for (var id = 0; id < length; id++) {
                 var xy = degree == 7 ?
@@ -51,7 +50,6 @@ exports.network = {
             this.edges[j].source = this.alias[this.edges[j].source];
             this.edges[j].target = this.alias[this.edges[j].target];
         }
-        console.log("preprocess done");
     },
     reset: function() {
         this.edges = [];

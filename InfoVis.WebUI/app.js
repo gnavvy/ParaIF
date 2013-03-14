@@ -35,9 +35,7 @@ var network = require('./models/network.server.js').network;
 var gosper = require('./models/gosper.server.js').gosper;
 
 clients.start = function () {
-    console.log('start');
-    var startingClient = this.now;
-    startingClient.reset(19, 4);
+    this.now.reset(19, 4);
 };
 
 clients.reset = function (degree, order) {
@@ -60,7 +58,7 @@ clients.reset = function (degree, order) {
                 });
                 res.on('end', function () {
                     network.setEdges(JSON.parse(data));
-                    network.preprocess(degree, order);
+                    network.preprocess(degree, order, 12);
                     clients.setNodes(network.getNodes());
                     clients.setEdges(network.getEdges());
                     clients.update();

@@ -88,10 +88,27 @@ class NodeLinkGraph:
         self.nodes.sort()
         return self.nodes, self.edges
 
+    def info(self):
+        files = [f for f in os.listdir(".") if f.endswith("edges")]
+        for ef in files:
+            self.nodes = []
+            self.edges = []
+            with open(ef, "r") as f:
+                content = f.read().splitlines()
+                for entry in content:
+                    if len(entry) == 0:
+                        continue
+                    node_pair = [int(n) for n in entry.split() if n.isdigit()]
+                    self.nodes.extend(node_pair)
+                    self.edges.append(node_pair)
+            self.nodes = list(set(self.nodes))
+            print(ef, self.nodes.__len__(), self.edges.__len__())
+
 
 if __name__ == "__main__":
     m = NodeLinkGraph("./data/facebook")
-    m.loadCircles(0)
-    nodes, edges = m.loadEdges(0, 100)
-    print(nodes)
-    print(edges)
+    # m.loadCircles(0)
+    # nodes, edges = m.loadEdges(0, 100)
+    # print(nodes)
+    # print(edges)
+    m.info()

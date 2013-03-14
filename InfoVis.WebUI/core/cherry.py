@@ -18,9 +18,9 @@ class Cherry:
         self.edges_json = json.dumps(edges, default=Edge.serialize)
 
     def _snap(self):
-        ego_id = 3437
+        ego_id = 1684
         count = -1
-        n_clusters = 19
+        n_clusters = 12
 
         # graph = NodeLinkGraph("./data/twitter")
         graph = NodeLinkGraph("./data/facebook")
