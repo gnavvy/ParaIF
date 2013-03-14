@@ -1,13 +1,36 @@
 __author__ = 'Yang'
 
 import os
-import random
-from cluster import cluster
-import scipy as sp
-import collections
 
 
-class model:
+class Node:
+    name = -1
+    group = 0
+
+    def __init__(self, name, group):
+        self.name = name
+        self.group = group
+
+    @staticmethod
+    def serialize(node):
+        return {"name": node.name, "group": node.group}
+
+
+class Edge:
+    source = target = -1
+    value = 0.0
+
+    def __init__(self, source, target, value):
+        self.source = source
+        self.target = target
+        self.value = value
+
+    @staticmethod
+    def serialize(edge):
+        return {"source": edge.source, "target": edge.target, "weight": edge.value}
+
+
+class NodeLinkGraph:
     circles = {}
     # group = {}
     edges = []
@@ -65,8 +88,9 @@ class model:
         self.nodes.sort()
         return self.nodes, self.edges
 
+
 if __name__ == "__main__":
-    m = model("./data/facebook")
+    m = NodeLinkGraph("./data/facebook")
     m.loadCircles(0)
     nodes, edges = m.loadEdges(0, 100)
     print(nodes)

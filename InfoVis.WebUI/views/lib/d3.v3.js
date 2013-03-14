@@ -809,7 +809,7 @@ d3 = function() {
     })(string);
   };
   function d3_transform(m) {
-    var r0 = [ m.a, m.b ], r1 = [ m.c, m.d ], kx = d3_transformNormalize(r0), kz = d3_transformDot(r0, r1), ky = d3_transformNormalize(d3_transformCombine(r1, r0, -kz)) || 0;
+    var r0 = [ m.a, m.b ], r1 = [ m.c, m.d7 ], kx = d3_transformNormalize(r0), kz = d3_transformDot(r0, r1), ky = d3_transformNormalize(d3_transformCombine(r1, r0, -kz)) || 0;
     if (r0[0] * r1[1] < r1[0] * r0[1]) {
       r0[0] *= -1;
       r0[1] *= -1;
@@ -844,7 +844,7 @@ d3 = function() {
     a: 1,
     b: 0,
     c: 0,
-    d: 1,
+    d7: 1,
     e: 0,
     f: 0
   };
@@ -7272,7 +7272,7 @@ d3 = function() {
       var d = {
         y: 1900,
         m: 0,
-        d: 1,
+        d7: 1,
         H: 0,
         M: 0,
         S: 0,
@@ -7281,7 +7281,7 @@ d3 = function() {
       if (i != string.length) return null;
       if ("p" in d) d.H = d.H % 12 + d.p * 12;
       var date = new d3_time();
-      date.setFullYear(d.y, d.m, d.d);
+      date.setFullYear(d.y, d.m, d.d7);
       date.setHours(d.H, d.M, d.S, d.L);
       return date;
     };
@@ -7337,7 +7337,7 @@ d3 = function() {
       return d3_time_months[d.getMonth()];
     },
     c: d3.time.format(d3_time_formatDateTime),
-    d: function(d, p) {
+    d7: function(d, p) {
       return d3_time_formatPad(d.getDate(), p, 2);
     },
     e: function(d, p) {
@@ -7395,7 +7395,7 @@ d3 = function() {
     b: d3_time_parseMonthAbbrev,
     B: d3_time_parseMonth,
     c: d3_time_parseLocaleFull,
-    d: d3_time_parseDay,
+    d7: d3_time_parseDay,
     e: d3_time_parseDay,
     H: d3_time_parseHour24,
     I: d3_time_parseHour24,
@@ -7459,7 +7459,7 @@ d3 = function() {
   function d3_time_parseDay(date, string, i) {
     d3_time_numberRe.lastIndex = 0;
     var n = d3_time_numberRe.exec(string.substring(i, i + 2));
-    return n ? (date.d = +n[0], i += n[0].length) : -1;
+    return n ? (date.d7 = +n[0], i += n[0].length) : -1;
   }
   function d3_time_parseHour24(date, string, i) {
     d3_time_numberRe.lastIndex = 0;

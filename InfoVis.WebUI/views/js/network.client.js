@@ -2,7 +2,7 @@ var _nodes = [];
 var _edges = [];
 var _auxil = [];
 
-var w = 900, h = 900, r = 2;
+var w = 900, h = 900, r = 5;
 var color = d3.scale.category10();
 //var scheme0 = d3.interpolateHsl('rgb(255, 64, 64)', 'rgb( 64,255, 64)');
 //var scheme1 = d3.interpolateHsl('rgb(255,128,128)', 'rgb(128,255,128)');
@@ -21,6 +21,13 @@ var viz = d3.select("#viz")
     .on("mouseup", mouseup)
     .on("mousemove", mousemove);
 
+var bundle = d3.layout.bundle();
+var line = d3.svg.line.radial()
+    .interpolate("bundle")
+    .tension(.85)
+    .radius(function(d) { return d.y; })
+    .angle(function(d) { return d.x / 180 * Math.PI; });
+
 // ***** call from server *****
 now.setNodes = function (nodes) { _nodes = nodes; };
 now.setEdges = function(edges) { _edges = edges; };
@@ -30,12 +37,19 @@ now.log = function(msg) { log(msg); };
 
 function update() {
     plot();
-//    enter();
-//    exit();
+//    auxil();
 }
 
-function enter() {
-    log("enter start");
+function auxil() {
+    log("auxil start");
+
+    viz.selectAll(".au").data(_auxil)
+        .enter().append("circle")
+        .attr("class", "node")
+        .attr("r", r);
+//        .style("fill", ""function(d) {
+//            return d.group == -1 ? "grey" : color(d.group);
+//        })
 
     force.nodes(_nodes).links(_edges).start();
 
@@ -54,7 +68,7 @@ function enter() {
         })
         .call(force.drag);
 
-    log("enter done");
+    log("auxil done");
 }
 
 function plot() {
@@ -70,7 +84,26 @@ function plot() {
         .style("stroke", function(edge) {
             return edge.source.group == -1 ? "gray" : color(edge.source.group);
         })
-        .style("stroke-width", 0.1);
+        .style("stroke-width", 0.05);
+
+//    viz.selectAll(".link").data(bundle(_edges))
+//        .enter().append("path")
+////        .attr("x1", function(edge) { return edge.source.x; })
+////        .attr("y1", function(edge) { return edge.source.y; })
+////        .attr("x2", function(edge) { return edge.target.x; })
+////        .attr("y2", function(edge) { return edge.target.y; })
+//        .attr("class", "link")
+//        .attr("d", line)
+//        .style("stroke", function(edge) {
+//            return edge.source.group == -1 ? "gray" : color(edge.source.group);
+//        });
+////        .style("stroke-width", 0.05);
+
+//    svg.selectAll(".link")
+//        .data(bundle(links))
+//        .enter().append("path")
+//        .attr("class", "link")
+//        .attr("d", line);
 
     viz.selectAll(".node").data(_nodes)
         .enter().append("circle")

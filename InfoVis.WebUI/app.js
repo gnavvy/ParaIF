@@ -42,6 +42,10 @@ clients.start = function () {
 
 clients.reset = function () {
     console.log('reset');
+    var degree = 7;
+    var order = 5;
+
+    gosper.init(degree);
     var opt_node = { host: 'gnavvy.cs.ucdavis.edu', port: 4000, path: '/getNodes' };
     var req_node = http.get(opt_node, function (res) {
         var data = '';
@@ -59,15 +63,13 @@ clients.reset = function () {
                 });
                 res.on('end', function () {
                     network.setEdges(JSON.parse(data));
-                    network.preprocess();
+                    network.preprocess(degree, order);
                     clients.setNodes(network.getNodes());
                     clients.setEdges(network.getEdges());
                 });
             });
         });
     });
-    gosper.init(4);
-//    clients.setAuxil(gosper.getData());
 };
 
 // go!
