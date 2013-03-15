@@ -1,18 +1,15 @@
 var _nodes = [];
 var _edges = [];
+var _paths = "";
 var _d = 19, _o = 4;
 
-var w = 900, h = 900, r = 3;
+var w = 900, h = 900;
 var color = d3.scale.category10();
-//var scheme0 = d3.interpolateHsl('rgb(255, 64, 64)', 'rgb( 64,255, 64)');
-//var scheme1 = d3.interpolateHsl('rgb(255,128,128)', 'rgb(128,255,128)');
-//var color = d3.scale.linear().domain([-0.5, 0.5]).range([0, 100]);
 
-var force = d3.layout.force()
-    .gravity(0.05)
-    .charge(-30)
-    .linkDistance(30)
-    .size([w, h]);
+//var force = d3.layout.force().size([w, h]);
+//    .gravity(0.05)
+//    .charge(-30)
+//    .linkDistance(30)
 //    .on("tick", tick);
 
 var viz = d3.select("#viz").attr("width", w).attr("height", h);
@@ -25,56 +22,63 @@ var viz = d3.select("#viz").attr("width", w).attr("height", h);
 //    .tension(.85)
 //    .radius(function(d) { return d.y; })
 //    .angle(function(d) { return d.x / 180 * Math.PI; });
+//var line = d3.svg.line()
+//    .x1(function(d) { return d.source.x})
+//    .y1(function(d) { return d.source.y})
+//    .x2(function(d) { return d.target.x})
+//    .y2(function(d) { return d.target.y});
 
 // ***** call from server *****
 now.setNodes = function (nodes) { _nodes = nodes; };
 now.setEdges = function(edges) { _edges = edges; };
+now.setPaths = function(paths) { _paths = paths; };
 now.update = function() { update(); };
 now.log = function(msg) { log(msg); };
 // ***** call from server *****
 
 function update() {
-    plot();
-}
+//    force.nodes(_nodes).links(_edges).start();
 
-function plot() {
-    force.nodes(_nodes).links(_edges).start();
+    viz.append("svg:path")
+        .attr("d", _paths)
+        .style("stroke-width", 0.05)
+        .style("stroke", "grey")
+        .style("fill", "none");
 
-    viz.selectAll(".link").data(_edges)
-        .enter().append("line")
-        .attr("x1", function(edge) { return edge.source.x; })
-        .attr("y1", function(edge) { return edge.source.y; })
-        .attr("x2", function(edge) { return edge.target.x; })
-        .attr("y2", function(edge) { return edge.target.y; })
-        .attr("class", "link")
-        .style("stroke", function(edge) {
-            return edge.source.group == -1 ? "gray" : color(edge.source.group);
-        })
-        .style("stroke-width", 0.05);
+//    viz.selectAll(".link").data(_edges)
+//        .enter().append("line")
+//        .attr("x1", function(edge) { return edge.source.x; })
+//        .attr("y1", function(edge) { return edge.source.y; })
+//        .attr("x2", function(edge) { return edge.target.x; })
+//        .attr("y2", function(edge) { return edge.target.y; })
+//        .attr("class", "link")
+//        .style("stroke", function(edge) {
+//            return edge.source.group == -1 ? "gray" : color(edge.source.group);
+//        })
+//        .style("stroke-width", 0.05);
 
     viz.selectAll(".node").data(_nodes)
         .enter().append("circle")
         .attr("cx", function(node) { return node.x; })
         .attr("cy", function(node) { return node.y; })
         .attr("class", "node")
-        .attr("r", r)
+        .attr("r", 2.0)
         .style("fill", function(node) {
             return node.group == -1 ? "gray" : color(node.group);
         });
-//        .call(force.drag);
 }
 
-function tick() {
-    viz.selectAll(".link").data(_edges)
-        .attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
-
-    viz.selectAll(".node").data(_nodes)
-        .attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
-}
+//function tick() {
+//    viz.selectAll(".link").data(_edges)
+//        .attr("x1", function(d) { return d.source.x; })
+//        .attr("y1", function(d) { return d.source.y; })
+//        .attr("x2", function(d) { return d.target.x; })
+//        .attr("y2", function(d) { return d.target.y; });
+//
+//    viz.selectAll(".node").data(_nodes)
+//        .attr("cx", function(d) { return d.x; })
+//        .attr("cy", function(d) { return d.y; });
+//}
 
 now.ready(function() {
     log('ready to start');

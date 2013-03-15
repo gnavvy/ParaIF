@@ -2,7 +2,7 @@ extends layout
 
 // local js, only used in this page
 block scripts
-    script(src="/lib/d3.v3.min.js")
+    script(src="/lib/d3.v3.js")
     script(src="/lib/now.js")
     script(src="/js/network.client.js")
 
@@ -10,16 +10,16 @@ block content
     h3 Guesture-based Graph Manipulation
     div.row-fluid
         div.span2.btn-group
-            button.btn.btn-warning#deg7 Deg 7
+            button.btn.btn-primary#deg7 Deg 7
             button.btn.btn-primary#deg19 Deg 19
         div.span3.btn-group
             button.btn.btn-primary#order1 1
             button.btn.btn-primary#order2 2
-            button.btn.btn-warning#order3 3
+            button.btn.btn-primary#order3 3
             button.btn.btn-primary#order4 4
             button.btn.btn-primary#order5 5
             button.btn.btn-primary#order6 6
         div.span1
             button.btn.btn-success#plot Plot
-        span#log
+        div#log
         svg#viz

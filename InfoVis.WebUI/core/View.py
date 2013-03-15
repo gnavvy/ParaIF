@@ -1,10 +1,13 @@
 __author__ = 'Yang'
 
+import networkx as nx
+import matplotlib.pyplot as plt
 from math import sqrt, floor
 from PIL import Image, ImageDraw
 
 
 class Gosper:
+
     def index2coord19(self, index, depth):
         direction = [0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1]
         sqrt3half = sqrt(3) / 2.0
@@ -140,10 +143,15 @@ class Gosper:
 
 if __name__ == "__main__":
     g = Gosper()
-    img = Image.new('RGBA', (900, 900), (255, 255, 255))
+    G = nx.Graph()
+
+    # colors = [(255, 247, 146), (51, 55, 69), (119, 196, 211), (218, 237, 226),
+    #           (234, 46, 73), (247, 233, 103),(88, 143, 39)]
+    colors = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]
+    img = Image.new('RGBA', (900, 900), "white")
     draw = ImageDraw.Draw(img)
 
-    depth = 4
+    depth = 6
     test = [x * 0.00001 for x in range(100000)]
 
     x0 = 200
@@ -153,10 +161,13 @@ if __name__ == "__main__":
         x, y = g.index2coord19(i, depth)
         x *= 750
         y *= 750
-        x += 200
+        x += 190
         y += 100
 
-        draw.line((x0, y0, x, y), (100, 100, 100))
+        seg = int(floor(i / (1.0 / 19.0)))
+        seg %= 7
+
+        draw.line((x0, y0, x, y), colors[seg], width=1)
         x0, y0 = x, y
     img2 = img.transpose(Image.FLIP_TOP_BOTTOM)
     img2.show()

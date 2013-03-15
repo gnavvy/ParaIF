@@ -49,6 +49,7 @@ clients.reset = function (degree, order) {
         });
         res.on('end', function () {
             network.setNodes(JSON.parse(data));
+//            console.log('getNodes: ' + network.getNodes());
             // get edges after nodes are received
             var opt_edge = { host: 'gnavvy.cs.ucdavis.edu', port: 4000, path: '/getEdges' };
             http.get(opt_edge, function (res) {
@@ -61,6 +62,7 @@ clients.reset = function (degree, order) {
                     network.preprocess(degree, order, 12);
                     clients.setNodes(network.getNodes());
                     clients.setEdges(network.getEdges());
+                    clients.setPaths(network.getPaths());
                     clients.update();
                 });
             });
