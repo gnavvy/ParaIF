@@ -26,32 +26,39 @@ exports.graph = {
         this.edges = edges;
     },
     preprocess: function(degree, order, n_cluster) {
+        var xmin = 1.0, xmax = 0.0, ymin = 1.0, ymax = 0.0;
         var lengthPerSegment = _(this.nodes).countBy(
             function(n) { return n.group; }
         );
-
         var checkpoint = 0;
         for (var seg in lengthPerSegment) {
             var offset = this.islands[n_cluster][seg] / degree;
             var length = lengthPerSegment[seg];
             var span = (1 / degree) / (length - 1);
             for (var i = 0; i < length; i++) {
-                var xy = degree == 7 ? gosper.index2coord7(span * i + offset, order) :
-                                       gosper.index2coord19(span * i + offset, order);
-                _(this.nodes[checkpoint + i]).extend({ x : xy[0], y : xy[1] });
-                this.alias[this.nodes[checkpoint + i].name] = checkpoint + i;
+                var xy = degree == 7 ?
+                    gosper.index2coord7(span*i+offset, order) :
+                    gosper.index2coord19(span*i+offset, order);
+
+                xmin = xmin > xy[0] ? xy[0] : xmin;
+                xmax = xmax < xy[0] ? xy[0] : xmax;
+                ymin = ymin > xy[1] ? xy[1] : ymin;
+                ymax = ymax < xy[1] ? xy[1] : ymax;
+
+                _(this.nodes[checkpoint+i]).extend({x: xy[0], y: xy[1]});
+                this.alias[this.nodes[checkpoint+i].name] = checkpoint+i;
             }
             checkpoint += length;
         }
-//        console.log(this.nodes);
-        for (var j = 0; j < this.edges.length; j++) {
-//            var e = this.edges[j];
-//            var src = _(this.nodes).find(function(n) { return n.name == e.source; });
-//            var tgt = _(this.nodes).find(function(n) { return n.name == e.target; });
-//            var path = _.str.sprintf("M %.2f %.2f L %.2f %.2f ", src.x, src.y, tgt.x, tgt.y);
-//            this.paths.push(path);
-            this.edges[j].source = this.alias[this.edges[j].source];
-            this.edges[j].target = this.alias[this.edges[j].target];
+        xmin -= 0.01; ymin -= 0.01; xmax += 0.01; ymax += 0.01;
+        var xs = xmax - xmin, ys = ymax - ymin;
+        for (i = 0; i < this.nodes.length; i++) {
+            this.nodes[i].x = (this.nodes[i].x - xmin) / xs;
+            this.nodes[i].y = (this.nodes[i].y - ymin) / ys;
+        }
+        for (i = 0; i < this.edges.length; i++) {
+            this.edges[i].source = this.alias[this.edges[i].source];
+            this.edges[i].target = this.alias[this.edges[i].target];
         }
     },
     reset: function() {

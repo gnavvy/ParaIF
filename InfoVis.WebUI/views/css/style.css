@@ -1,16 +1,20 @@
+body {
+    background: #2c2c2c
+}
+
 button {
     /*margin-right: 16px;*/
 }
 
 #canvas {
     margin-top: 12px;
-    border: 1px solid #00b6e8;
+    border: 1px solid #313336;
 }
 
-#viz {
-    margin-top: 12px;
-    border: 1px solid #3AA9E8;
-}
+/*#viz {*/
+    /*margin-top: 12px;*/
+    /*border: 1px solid #3AA9E8;*/
+/*}*/
 
 #log {
     color: #3AA9E8

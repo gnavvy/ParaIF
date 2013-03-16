@@ -3,8 +3,10 @@ extends layout
 // local js, only used in this page
 block scripts
     script(src="lib/now.js")
-    script(src="lib/three.min.js")
-    script(src="js/network.client.js")
+    script(src="lib/three.js")
+    script(src="js/graph.client.js")
+    script(src="js/vertex.shader", type='x-shader/x-vertex', id="vertexshader")
+    script(src="js/vertex.shader", type='x-shader/x-fragment', id="fragmentshader")
 
 block content
     div.row-fluid
