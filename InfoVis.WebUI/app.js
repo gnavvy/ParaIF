@@ -8,31 +8,23 @@ app.configure(function () {
     app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');
     app.use(app.router);
+    app.get('/', routes.index);
+    app.get('/critique', routes.critique);
+    app.get('/chris', routes.chris);
+    app.get('/svm', routes.svm);
     app.use(express.favicon());
     app.use(express.logger('dev'));
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.static(__dirname + '/views'));
-});
-
-app.configure('development', function () {
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
-app.configure('production', function () {
-    app.use(express.errorHandler());
-});
-
-// Routes
-app.get('/', routes.index);
-app.get('/critique', routes.critique);
-app.get('/chris', routes.chris);
-app.get('/svm', routes.svm);
-
 var server = http.createServer(app);
 var clients = require('now').initialize(server).now;
-var network = require('./models/network.server.js').network;
+var graph = require('./models/graph.server.js').graph;
 var gosper = require('./models/gosper.server.js').gosper;
+var host = 'gnavvy.cs.ucdavis.edu', port = 4000;
 
 clients.start = function () {
     this.now.reset(19, 4);
@@ -40,29 +32,23 @@ clients.start = function () {
 
 clients.reset = function (degree, order) {
     console.log('reset with degree: ' + degree + ', order: ' + order);
-    gosper.init(degree);
-    var opt_node = { host: 'gnavvy.cs.ucdavis.edu', port: 4000, path: '/getNodes' };
+    graph.reset();
+    gosper.init(degree, order);
+    var opt_node = { host: host, port: port, path: '/getNodes' };
     http.get(opt_node, function (res) {
         var data = '';
-        res.on('data', function (chunk) {
-            data += chunk;
-        });
+        res.on('data', function (chunk) { data += chunk; });
         res.on('end', function () {
-            network.setNodes(JSON.parse(data));
-//            console.log('getNodes: ' + network.getNodes());
-            // get edges after nodes are received
-            var opt_edge = { host: 'gnavvy.cs.ucdavis.edu', port: 4000, path: '/getEdges' };
+            graph.setNodes(JSON.parse(data));
+            var opt_edge = { host: host, port: port, path: '/getEdges' };
             http.get(opt_edge, function (res) {
                 data = '';
-                res.on('data', function (chunk) {
-                    data += chunk;
-                });
+                res.on('data', function (chunk) { data += chunk; });
                 res.on('end', function () {
-                    network.setEdges(JSON.parse(data));
-                    network.preprocess(degree, order, 12);
-                    clients.setNodes(network.getNodes());
-                    clients.setEdges(network.getEdges());
-                    clients.setPaths(network.getPaths());
+                    graph.setEdges(JSON.parse(data));
+                    graph.preprocess(degree, order, 12);
+                    clients.setNodes(graph.getNodes());
+                    clients.setEdges(graph.getEdges());
                     clients.update();
                 });
             });
@@ -70,7 +56,6 @@ clients.reset = function (degree, order) {
     });
 };
 
-// go!
-server.listen(app.get('port'), function () {
+server.listen(app.get('port'), function () {    // go!
     console.log("Express server listening on port " + app.get('port'));
 });

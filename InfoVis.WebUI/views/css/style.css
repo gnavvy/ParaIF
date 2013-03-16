@@ -2,6 +2,11 @@ button {
     /*margin-right: 16px;*/
 }
 
+#canvas {
+    margin-top: 12px;
+    border: 1px solid #00b6e8;
+}
+
 #viz {
     margin-top: 12px;
     border: 1px solid #3AA9E8;
@@ -9,10 +14,4 @@ button {
 
 #log {
     color: #3AA9E8
-}
-
-circle:hover {
-    /*stroke-width: 1;*/
-	/*stroke: #666;*/
-    /*cursor: pointer;*/
 }

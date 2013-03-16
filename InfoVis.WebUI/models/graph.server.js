@@ -2,7 +2,7 @@ var _ = require("underscore");
     _.str = require('underscore.string');
 var gosper = require("./gosper.server.js").gosper;
 
-exports.network = {
+exports.graph = {
     nodes: [],
     edges: [],
     paths: [],
@@ -18,9 +18,6 @@ exports.network = {
     getEdges: function() {
         console.log("#edges: " + this.edges.length);
         return this.edges;
-    },
-    getPaths: function() {
-        return this.paths.join();
     },
     setNodes: function(nodes) {
         this.nodes = nodes;
@@ -41,27 +38,21 @@ exports.network = {
             for (var i = 0; i < length; i++) {
                 var xy = degree == 7 ? gosper.index2coord7(span * i + offset, order) :
                                        gosper.index2coord19(span * i + offset, order);
-                _(this.nodes[checkpoint + i]).extend({
-                    x : xy[0] * 750 + 180,
-                    y : xy[1] * 750 + 120
-                });
+                _(this.nodes[checkpoint + i]).extend({ x : xy[0], y : xy[1] });
                 this.alias[this.nodes[checkpoint + i].name] = checkpoint + i;
             }
             checkpoint += length;
         }
 //        console.log(this.nodes);
         for (var j = 0; j < this.edges.length; j++) {
-            var e = this.edges[j];
-            var src = _(this.nodes).find(function(n) { return n.name == e.source; });
-            var tgt = _(this.nodes).find(function(n) { return n.name == e.target; });
-            var path = _.str.sprintf("M %.2f %.2f L %.2f %.2f ", src.x, src.y, tgt.x, tgt.y);
-            this.paths.push(path);
+//            var e = this.edges[j];
+//            var src = _(this.nodes).find(function(n) { return n.name == e.source; });
+//            var tgt = _(this.nodes).find(function(n) { return n.name == e.target; });
+//            var path = _.str.sprintf("M %.2f %.2f L %.2f %.2f ", src.x, src.y, tgt.x, tgt.y);
+//            this.paths.push(path);
             this.edges[j].source = this.alias[this.edges[j].source];
             this.edges[j].target = this.alias[this.edges[j].target];
         }
-
-
-
     },
     reset: function() {
         this.edges = [];

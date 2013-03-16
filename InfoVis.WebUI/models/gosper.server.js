@@ -1,16 +1,19 @@
 var _ = require("underscore");
 
 var gosper = {
-    s3h: Math.sqrt(3.0) / 2.0,
+    s3h: Math.sqrt(3) / 2.0,
     a: 0.0, h: 0.0,
+//    c: [], o: 0, // c: center o: order
     dir7: [0, 1, 1, 0, 0, 0, 1],
     dir19: [0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1],
     data: []
 };
 
-gosper.init = function(degree) {
+gosper.init = function(degree, order) {
     this.a = 1.0 / Math.sqrt(degree);   // length of flag triangle
     this.h = this.a * this.s3h;         // height of flag triangle
+//    this.c = degree == 7 ? this.index2coord7(0.5, order)
+//        : this.index2coord19(0.5, order);
 };
 
 gosper.index2coord19 = function(index, depth) {
@@ -18,7 +21,8 @@ gosper.index2coord19 = function(index, depth) {
     var off = index * 19 - seg;
     if (depth == 1) {
         switch (seg) {
-            case 0: return [this.a * off, 0];
+            case 0: 
+                return [this.a * off, 0];
             case 1: return [this.a * (1 + off), 0];
             case 2: return [this.a * (2 + 0.5 * off), this.h * off];
             case 3: return [this.a * (2.5 + 0.5 * off), this.h * (1 + off)];

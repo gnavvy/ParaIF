@@ -2,12 +2,11 @@ extends layout
 
 // local js, only used in this page
 block scripts
-    script(src="/lib/d3.v3.js")
-    script(src="/lib/now.js")
-    script(src="/js/network.client.js")
+    script(src="lib/now.js")
+    script(src="lib/three.min.js")
+    script(src="js/network.client.js")
 
 block content
-    h3 Guesture-based Graph Manipulation
     div.row-fluid
         div.span2.btn-group
             button.btn.btn-primary#deg7 Deg 7
@@ -22,4 +21,4 @@ block content
         div.span1
             button.btn.btn-success#plot Plot
         div#log
-        svg#viz
+    div#canvas

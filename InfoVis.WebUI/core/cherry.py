@@ -18,7 +18,7 @@ class Cherry:
         self.edges_json = json.dumps(edges, default=Edge.serialize)
 
     def _snap(self):
-        ego_id = 1684
+        ego_id = 414
         count = -1
         n_clusters = 12
 
