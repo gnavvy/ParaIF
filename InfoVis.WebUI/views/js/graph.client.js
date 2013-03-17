@@ -9,8 +9,8 @@ now.ready(function() {
 });
 // ***** call from server *****
 
-var canvas, camera, scene, renderer, projector;
-var geometry, materials, mesh;
+var canvas, camera, scene, renderer, stats;
+var nodeGeometry, edgeGeometry, nodeMaterial, edgeMaterial;
 var W, H;
 var _nodes = [], _edges = [];
 var colors = [0xF81F37, 0xF8981F, 0xEECF09, 0x8FD952, 0x0D9FD8, 0x8C71D1, 0xF640AE];
@@ -18,10 +18,10 @@ var colors = [0xF81F37, 0xF8981F, 0xEECF09, 0x8FD952, 0x0D9FD8, 0x8C71D1, 0xF640
 
 function init() {
     canvas = document.getElementById("canvas");
-    W = canvas.clientWidth;
-    H = W * 0.9;
+    W = canvas.clientWidth; H = W * 0.9;
 
     renderer = new THREE.CanvasRenderer();
+//    renderer = new THREE.WebGLRenderer( { antialias: true } );
     renderer.setSize(W, H);
 
     canvas.appendChild(renderer.domElement);
@@ -32,25 +32,38 @@ function init() {
     scene = new THREE.Scene();
     scene.add(camera);
 
-    var src, tgt, vi, vj, line;
-    for (var k = 0; k < _edges.length; k++) {
-        src = _nodes[_edges[k].source];
-        tgt = _nodes[_edges[k].target];
-        vi = new THREE.Vector3(src.x * W, src.y * H, 0);
-        vj = new THREE.Vector3(tgt.x * W, tgt.y * H, 0);
-        line = create_line(vi, vj, colors[src.group % colors.length]);
-        scene.add(line);
-    }
+    initEdges();
+    initNodes();
+}
 
-    var cg = new THREE.CircleGeometry(4);
-    var node, c, circle;
+function initNodes() {
+    nodeGeometry = new THREE.CircleGeometry(4);
     for (var n = 0; n < _nodes.length; n++) {
-        node = _nodes[n];
-        c = colors[node.group % colors.length];
-        circle = new THREE.Mesh(cg, new THREE.MeshBasicMaterial({color: c}));
+        var node = _nodes[n];
+        nodeMaterial = new THREE.MeshBasicMaterial({ color: colors[node.group % colors.length] });
+        var circle = new THREE.Mesh(nodeGeometry, nodeMaterial);
         circle.position.set(node.x * W, node.y * H, 0);
         scene.add(circle);
     }
+}
+
+function initEdges() {
+    var edgeColors = [];
+    edgeGeometry = new THREE.Geometry();
+    edgeMaterial = new THREE.LineBasicMaterial({
+        opacity: 0.1, color: 0xffffff, lineWidth: 3,
+        vertexColors: THREE.VertexColors
+    });
+    for (var i = 0; i < _edges.length; i++) {
+        var src = _nodes[_edges[i].source];
+        var tgt = _nodes[_edges[i].target];
+        edgeColors[i] = new THREE.Color(colors[src.group % colors.length]);
+        edgeGeometry.vertices.push(new THREE.Vector3(src.x * W, src.y * H));
+        edgeGeometry.vertices.push(new THREE.Vector3(tgt.x * W, tgt.y * H));
+    }
+    edgeGeometry.colors = edgeColors;
+    var edges = new THREE.Line(edgeGeometry, edgeMaterial, THREE.LinePieces);
+    scene.add(edges);
 }
 
 function animate() {
@@ -60,15 +73,4 @@ function animate() {
 
 function render() {
     renderer.render(scene, camera);
-}
-
-function create_line(v0, v1, color) {
-    var geometry = new THREE.Geometry(); {
-        geometry.vertices.push(v0);
-        geometry.vertices.push(v1);
-    }
-    var lineMat = new THREE.LineBasicMaterial({
-        opacity: 0.1, linewidth: 1, color: color
-    });
-    return new THREE.Line(geometry, lineMat);
 }
