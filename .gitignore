@@ -3,3 +3,4 @@
 *.xcodeproj/*
 *.idea*
 node_modules
+*.pyc

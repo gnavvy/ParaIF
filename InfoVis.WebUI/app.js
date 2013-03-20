@@ -27,10 +27,11 @@ var gosper = require('./models/gosper.server.js').gosper;
 var host = 'gnavvy.cs.ucdavis.edu', port = 4000;
 
 clients.start = function () {
-    this.now.reset(7, 4);
+    this.now.reset(7, 4, 6);
+//    this.now.reset(19, 4, 12);
 };
 
-clients.reset = function (degree, order) {
+clients.reset = function (degree, order, n_clusters) {
     console.log('reset with degree: ' + degree + ', order: ' + order);
     graph.reset();
     gosper.init(degree, order);
@@ -46,7 +47,7 @@ clients.reset = function (degree, order) {
                 res.on('data', function (chunk) { data += chunk; });
                 res.on('end', function () {
                     graph.setEdges(JSON.parse(data));
-                    graph.preprocess(degree, order, 6);
+                    graph.preprocess(degree, order, n_clusters);
                     clients.setNodes(graph.getNodes());
                     clients.setEdges(graph.getEdges());
                     clients.update();

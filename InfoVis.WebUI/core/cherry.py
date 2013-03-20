@@ -2,6 +2,7 @@ __author__ = 'Yang'
 
 import json
 import cherrypy
+import time
 from math import floor
 from Control import Cluster
 from Model import Node, Edge, NodeLinkGraph
@@ -12,34 +13,32 @@ class Cherry:
     nodes_json = ""
 
     def __init__(self):
-        nodes, edges = self._snap()
+        nodes, edges = self.preprocessing()
         print('#nodes: ', nodes.__len__())
         self.nodes_json = json.dumps(nodes, default=Node.serialize)
         self.edges_json = json.dumps(edges, default=Edge.serialize)
 
-    def _snap(self):
-        ego_id = 0
+    def preprocessing(self):
+        ego_id = 1912
         count = -1
         n_clusters = 6
 
-        # graph = NodeLinkGraph("./data/twitter")
         graph = NodeLinkGraph("./data/facebook")
-        # graph.loadCircles(ego_id)
         nodes, edges = graph.loadEdges(ego_id, count)
+        labels = graph.loadCircles(ego_id)
         c = Cluster(nodes, edges)
-        # labels = c.spectral(n_clusters)
-        labels = c.hierachical(n_clusters)
-        nodes = [Node(nodes[i], int(labels[i])) for i in range(len(nodes))]
-        nodes.sort(key=lambda n: n.group)
-        edges = [Edge(e[0], e[1], 1.0) for e in edges]
-        return nodes, edges
 
-    def _dummy(self):
-        n_points = 1900
-        n_clusters = 19
-        seg = int(floor(n_points / n_clusters))
-        nodes = [Node(i, int(floor(i / seg))) for i in range(n_points)]
-        edges = []
+        clusters1 = c.spectral(n_clusters)
+        # clusters1 = c.hierarchical(n_clusters)
+        clusters2 = c.agglomerate(nodes, edges, clusters1)
+        # clusters3 = c.constraint(nodes, edges, labels)
+
+        # st2 = time.time()
+        # print(st2 - st)
+
+        nodes = [Node(nodes[i], int(clusters1[i]), int(labels[i])) for i in range(len(nodes))]
+        nodes.sort(key=lambda n: n.cluster)
+        edges = [Edge(e[0], e[1], 1.0) for e in edges]
         return nodes, edges
 
     @cherrypy.expose

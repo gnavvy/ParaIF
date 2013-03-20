@@ -5,15 +5,17 @@ import os
 
 class Node:
     name = -1
-    group = 0
+    cluster = 0
+    label = 0
 
-    def __init__(self, name, group):
+    def __init__(self, name, cluster, label):
         self.name = name
-        self.group = group
+        self.cluster = cluster
+        self.label = label
 
     @staticmethod
     def serialize(node):
-        return {"name": node.name, "group": node.group}
+        return {"name": node.name, "cluster": node.cluster, "label": node.label}
 
 
 class Edge:
@@ -32,7 +34,6 @@ class Edge:
 
 class NodeLinkGraph:
     circles = {}
-    # group = {}
     edges = []
     nodes = []
 
@@ -57,7 +58,9 @@ class NodeLinkGraph:
                     nodes = [int(n) for n in items if n.isdigit()]
                     self.circles[circle_name] = nodes
 
-    def getGroupID(self, node):
+        return [self.getLabel(node) for node in self.nodes]
+
+    def getLabel(self, node):
         groups = [g for g in self.circles.keys() if node in self.circles[g]]
         if len(groups) == 0:
             return -1
@@ -80,13 +83,19 @@ class NodeLinkGraph:
                         continue
                     if len(self.edges) > count - 1 and count > 0:
                         break
-                    # node_pair = [int(n) for n in entry.split() if n.isdigit()]
                     node_pair = tuple(int(n) for n in entry.split() if n.isdigit())
+
+                    # if node_pair[0] in self.node_edges:
+                    #     self.node_edges[node_pair[0]].append(node_pair[1])
+                    # else:
+                    #     self.node_edges[node_pair[0]] = [node_pair[1]]
+
                     self.nodes.extend(node_pair)
                     self.edges.append(node_pair)
 
         self.nodes = list(set(self.nodes))
         self.nodes.sort()
+
         return self.nodes, self.edges
 
     def info(self):

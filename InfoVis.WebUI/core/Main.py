@@ -27,7 +27,7 @@ def _snap():
     graph = NodeLinkGraph("./data/facebook")
     nodes, edges = graph.loadEdges(ego_id, count)
     c = Cluster(nodes, edges)
-    labels = c.hierachical(n_clusters)
+    labels = c.hierarchical(n_clusters)
     # nodes.sort()
     # nodes = [Node(nodes[i], int(labels[i])) for i in range(len(nodes))]
     # nodes.sort(key=lambda n: n.group)
