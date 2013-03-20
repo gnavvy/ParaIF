@@ -50,6 +50,7 @@ clients.reset = function (degree, order, n_clusters) {
                     graph.preprocess(degree, order, n_clusters);
                     clients.setNodes(graph.getNodes());
                     clients.setEdges(graph.getEdges());
+                    clients.setDegree(degree);
                     clients.update();
                 });
             });
