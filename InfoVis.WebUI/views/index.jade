@@ -8,8 +8,18 @@ block scripts
     script(src="lib/dat.gui.min.js")
     script(src="lib/tween.min.js")
     script(src="js/graph.client.js")
-//    script(src="js/vertex.shader", type='x-shader/x-vertex', id="vertexshader")
-//    script(src="js/fragment.shader", type='x-shader/x-fragment', id="fragmentshader")
+    script(id="vs", type="x-shader/x-vertex").
+        varying vec3 color;
+        attribute vec3 vertexColor;
+        void main(void) {
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    script(id="fs", type="x-shader/x-fragment").
+        varying vec3 color;
+        uniform float opacity;
+        void main(void) {
+            gl_FragColor = vec4(1, 1, 1, opacity);
+        }
 
 block content
     // div.row-fluid

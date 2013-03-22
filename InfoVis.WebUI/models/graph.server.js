@@ -39,7 +39,13 @@ exports.graph = {
             var span = (1.0 / degree) / (length - 1);
             for (var i = 0; i < length; i++) {
                 var xy = [];
-                for (var j = 0; j < degree; j++) {
+                for (var j = 0; j <= degree; j++) {
+                    if (j == degree) {
+                        xy[j] = degree == 7 ?
+                            gosper.index2coord7(span*i, order - 1) :
+                            gosper.index2coord19(span*i, order - 1);
+                        continue;
+                    }
                     var offset = j / degree;
                     xy[j] = degree == 7 ?
                         gosper.index2coord7(span*i+offset, order) :
