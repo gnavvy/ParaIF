@@ -11,6 +11,11 @@ button {
     border: 1px solid #313336;
 }
 
+#stats { position: absolute; top: 0; left: 0; }
+#stats #fps { background: transparent !important }
+#stats #fps #fpsText { color: #fff !important }
+#stats #fps #fpsGraph { display: none }
+
 #log {
     color: #3AA9E8
 }

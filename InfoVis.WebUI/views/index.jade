@@ -10,16 +10,16 @@ block scripts
     script(src="js/graph.client.js")
     script(id="vs", type="x-shader/x-vertex").
         varying vec3 color;
-        attribute vec3 vertexColor;
+        attribute vec3 customColor;
         void main(void) {
-            color = vertexColor;
+            color = customColor;
             gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
     script(id="fs", type="x-shader/x-fragment").
         varying vec3 color;
         uniform float opacity;
         void main(void) {
-            gl_FragColor = vec4(1, 1, 1, opacity);
+            gl_FragColor = vec4(color, opacity);
         }
 
 block content

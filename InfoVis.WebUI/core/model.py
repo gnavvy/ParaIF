@@ -84,12 +84,6 @@ class NodeLinkGraph:
                     if len(self.edges) > count - 1 and count > 0:
                         break
                     node_pair = tuple(int(n) for n in entry.split() if n.isdigit())
-
-                    # if node_pair[0] in self.node_edges:
-                    #     self.node_edges[node_pair[0]].append(node_pair[1])
-                    # else:
-                    #     self.node_edges[node_pair[0]] = [node_pair[1]]
-
                     self.nodes.extend(node_pair)
                     self.edges.append(node_pair)
 

@@ -14,12 +14,12 @@ class Cherry:
 
     def __init__(self):
         nodes, edges = self.preprocessing()
-        print('#nodes: ', nodes.__len__())
+        print('#nodes: ', len(nodes), "#edges: ", len(edges))
         self.nodes_json = json.dumps(nodes, default=Node.serialize)
         self.edges_json = json.dumps(edges, default=Edge.serialize)
 
     def preprocessing(self):
-        ego_id = 1912
+        ego_id = 1684
         count = -1
         n_clusters = 6
 
@@ -28,9 +28,9 @@ class Cherry:
         labels = graph.loadCircles(ego_id)
         c = Cluster(nodes, edges)
 
-        clusters1 = c.spectral(n_clusters)
-        # clusters1 = c.hierarchical(n_clusters)
-        clusters2 = c.agglomerate(nodes, edges, clusters1)
+        # clusters1 = c.spectral(n_clusters)
+        clusters1 = c.hierarchical(n_clusters)
+        # clusters2 = c.agglomerate(nodes, edges, clusters1)
         # clusters3 = c.constraint(nodes, edges, labels)
 
         # st2 = time.time()
