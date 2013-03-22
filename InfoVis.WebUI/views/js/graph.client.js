@@ -5,18 +5,15 @@ now.setDegree = function(degree) { _degree = degree; };
 now.update = function() { init(); animate(); };
 now.ready(function() {
     var Widget = function() {
-        this.animate = function() {
-            tweenNodes();
-        };
-        this.addEdges = function() {
-            initEdges();
-        };
+        this.animate = function() { tweenNodes(); };
+        this.addEdges = function() { initEdges(); };
     }
 
     var widget = new Widget();
     var gui = new dat.GUI();
     gui.add(widget, 'animate');
     gui.add(widget, 'addEdges');
+
     now.start();  // go!
 });
 // ***** call from server *****
@@ -26,19 +23,10 @@ var nodes, edges, nodeGeometry, edgeGeometry, nodeMaterial, edgeMaterial;
 var object, uniforms, attributes, shaderMaterial, geometry;
 var _nodes = [], _edges = [], _degree = 7;
 //var colors = [0xF81F37, 0xF8981F, 0xEECF09, 0x8FD952, 0x0D9FD8, 0x8C71D1, 0xF640AE];
-var colors = ['red', 'orange', 'green', 'cyan', 'blue', 'violet'];
+var colormap = ['red', 'orange', 'green', 'cyan', 'blue', 'violet'];
 var layout = { 7: [0, 1, 6, 4, 5, 3, 7], 8: [0, 1, 6, 4, 2, 3, 7] };
 var print = console.log.bind(console);
-var cx = 434, cy = 320;
-
-var Widget = function() {
-    this.animate = function() {
-        tweenNodes();
-    };
-    this.addEdges = function() {
-        initEdges();
-    };
-}
+var cx = 440, cy = 400;
 
 function init() {
     canvas = document.getElementById("canvas");
@@ -47,21 +35,28 @@ function init() {
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(W, H);
     canvas.appendChild(renderer.domElement);
+
     var scale = 1.5;
     camera = new THREE.OrthographicCamera(-W/scale, W/scale, H/scale, -H/scale, 1, 1000);
     camera.position.set(cx, cy, 1);
     scene = new THREE.Scene();
     scene.add(camera);
 
+    stats = new Stats();
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.top = '0px';
+    canvas.appendChild(stats.domElement);
+
 //    tweenNodes();
-    initShader();
+//    initShader();
     initNodes();
     initEdges();
+//    drawEdges();
 }
 
 function initShader() {
     attributes = {
-        vertexColor: { type: 'c', value: [] }
+        vertexColor: { type: "c", value: [] }
     };
     uniforms = {
         opacity:   { type: "f", value: 0.01 }
@@ -72,7 +67,6 @@ function initShader() {
         vertexShader:   document.getElementById("vs").textContent,
         fragmentShader: document.getElementById("fs").textContent,
         blending: 		THREE.AdditiveBlending,
-        depthTest:		false,
         transparent:	true
     });
     shaderMaterial.linewidth = 1;
@@ -105,22 +99,60 @@ function initNodes() {
         var node = _nodes[n];
         var pos = node.positions[layout[_degree][node.cluster]];
         nodeGeometry.vertices.push(new THREE.Vector3(pos[0]*W, pos[1]*H));
-        nodeColors[n] = new THREE.Color(colors[node.label % colors.length]);
+        nodeColors[n] = new THREE.Color(colormap[node.label % colormap.length]);
     }
     nodeGeometry.colors = nodeColors;
     nodes = new THREE.ParticleSystem(nodeGeometry, nodeMaterial);
     scene.add(nodes);
 }
 
+function drawEdges() {
+    var edgeLength = _edges.length;
+    edgeGeometry = new THREE.BufferGeometry();
+    edgeGeometry.attributes = {  // index: i;  position: xyz * 2 vertices;  color: rgb * 2 vertices;
+        position:   { itemSize: 3, array: new Float32Array(edgeLength*3*2), numItems: edgeLength*3*2 },
+        color:      { itemSize: 3, array: new Float32Array(edgeLength*3*2), numItems: edgeLength*3*2 }
+    };
+
+    var positions = edgeGeometry.attributes.position.array;
+    var colors = edgeGeometry.attributes.color.array;
+
+    for (var e = 0; e < edgeLength; e++) {
+        var source = _nodes[_edges[e].source];
+        var target = _nodes[_edges[e].target];
+        var sourcePos = source.positions[layout[_degree][source.cluster]];
+        var targetPos = target.positions[layout[_degree][target.cluster]];
+        var sourceColor = new THREE.Color(colormap[source.label % colormap.length]);
+        var targetColor = new THREE.Color(colormap[target.label % colormap.length]);
+        positions[e*6+0] = sourcePos[0]*W;
+        positions[e*6+1] = sourcePos[1]*H;
+        positions[e*6+2] = 0;
+        positions[e*6+3] = targetPos[0]*W;
+        positions[e*6+4] = targetPos[1]*H;
+        positions[e*6+5] = 0;
+        colors[e*6+0] = sourceColor.r;
+        colors[e*6+1] = sourceColor.g;
+        colors[e*6+2] = sourceColor.b;
+        colors[e*6+3] = targetColor.r;
+        colors[e*6+4] = targetColor.g;
+        colors[e*6+5] = targetColor.b;
+    }
+
+    edgeMaterial = new THREE.LineBasicMaterial({
+        transparent: false, blending: THREE.NoBlending, vertexColors: THREE.VertexColors
+    });
+
+    edges = new THREE.Line(edgeGeometry, edgeMaterial, THREE.LinePieces);
+    scene.add(edges);
+}
+
 function initEdges() {
-//    var edgeColors = [];
+    var edgeColors = [];
 
     edgeGeometry = new THREE.Geometry();
-//    edgeMaterial = new THREE.LineBasicMaterial({
-//        lineWidth: 1, opacity: 0.1, transparent: false,
-//        blending: THREE.NoBlending,
-//        vertexColors: THREE.VertexColors
-//    });
+    edgeMaterial = new THREE.LineBasicMaterial({
+        transparent: false, blending: THREE.NoBlending, vertexColors: THREE.VertexColors
+    });
 
     for (var i = 0; i < _edges.length; i++) {
         var src = _nodes[_edges[i].source];
@@ -129,32 +161,22 @@ function initEdges() {
         var posTgt = tgt.positions[layout[_degree][tgt.cluster]];
         edgeGeometry.vertices.push(new THREE.Vector3(posSrc[0]*W, posSrc[1]*H));
         edgeGeometry.vertices.push(new THREE.Vector3(posTgt[0]*W, posTgt[1]*H));
-//        edgeColors.push(new THREE.Color(colors[src.label % colors.length]));
-//        edgeColors.push(new THREE.Color(colors[tgt.label % colors.length]));
+        edgeColors.push(new THREE.Color(colormap[src.label % colormap.length]));
+        edgeColors.push(new THREE.Color(colormap[tgt.label % colormap.length]));
     }
-//    edgeGeometry.colors = edgeColors;
-    edges = new THREE.Line(edgeGeometry, shaderMaterial, THREE.LinePieces);
+    edgeGeometry.colors = edgeColors;
+    edges = new THREE.Line(edgeGeometry, edgeMaterial, THREE.LinePieces);
     scene.add(edges);
 }
 
 function animate() {
-    nodes.geometry.verticesNeedUpdate = true;
-    TWEEN.update();
+//    nodes.geometry.verticesNeedUpdate = true;
+//    TWEEN.update();
     requestAnimationFrame(animate);
     render();
+    stats.update();
 }
 
 function render() {
-//    var time = Date.now() * 0.001;
-//    for( var i = 0; i < attributes.displacement.value.length; i ++ ) {
-//        nx = 0.3 * ( 0.5 - Math.random() );
-//        ny = 0.3 * ( 0.5 - Math.random() );
-//        nz = 0.3 * ( 0.5 - Math.random() );
-//        attributes.displacement.value[ i ].x += nx;
-//        attributes.displacement.value[ i ].y += ny;
-//        attributes.displacement.value[ i ].z += nz;
-//    }
-//    attributes.displacement.needsUpdate = true;
-
     renderer.render(scene, camera);
 }
