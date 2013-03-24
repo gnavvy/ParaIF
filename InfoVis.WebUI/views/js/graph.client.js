@@ -38,7 +38,7 @@ function init() {
 
     var scale = 1.5;
     camera = new THREE.OrthographicCamera(-W/scale, W/scale, H/scale, -H/scale, 1, 1000);
-    camera.position.set(cx, cy, 1);
+//    camera.position.set(cx, cy, 1);
     scene = new THREE.Scene();
     scene.add(camera);
 
@@ -47,28 +47,10 @@ function init() {
     stats.domElement.style.top = '0px';
     canvas.appendChild(stats.domElement);
 
-//    tweenNodes();
-//    initShader();
     initNodes();
     initEdges();
-}
 
-function initShader() {
-    attributes = {
-        customColor: { type: "c", value: [] }
-    };
-    uniforms = {
-        opacity:   { type: "f", value: 0.02 }
-    };
-    shaderMaterial = new THREE.ShaderMaterial( {
-        attributes:     attributes,
-        uniforms:       uniforms,
-        vertexShader:   document.getElementById("vs").textContent,
-        fragmentShader: document.getElementById("fs").textContent,
-        blending: 		THREE.AdditiveBlending,
-        transparent:	true
-    });
-    shaderMaterial.linewidth = 2;
+    window.addEventListener( 'resize', onWindowResize, false );
 }
 
 function tweenNodes() {
@@ -101,8 +83,12 @@ function initNodes() {
         nodeColors[n] = new THREE.Color(colormap[node.label % colormap.length]);
     }
     nodeGeometry.colors = nodeColors;
+    nodeGeometry.computeBoundingBox();
     nodes = new THREE.ParticleSystem(nodeGeometry, nodeMaterial);
     scene.add(nodes);
+
+    var center = getGeometryCenter(nodeGeometry.boundingBox);
+    camera.position.set(center.x, center.y, 1);
 }
 
 function initEdges() {
@@ -134,6 +120,12 @@ function initEdges() {
     scene.add(edges);
 }
 
+function getGeometryCenter(boundingBox) {
+    return new THREE.Vector3(0.5 * (boundingBox.min.x + boundingBox.max.x),
+                             0.5 * (boundingBox.min.y + boundingBox.max.y),
+                             0.5 * (boundingBox.min.z + boundingBox.max.z));
+}
+
 function animate() {
 //    nodes.geometry.verticesNeedUpdate = true;
 //    TWEEN.update();
@@ -144,4 +136,9 @@ function animate() {
 
 function render() {
     renderer.render(scene, camera);
+}
+
+function onWindowResize() {
+    camera.updateProjectionMatrix();
+    renderer.setSize(canvas.clientWidth, canvas.clientWidth * 0.9);
 }
