@@ -5,7 +5,7 @@ now.setDegree = function(degree) { _degree = degree; };
 now.update = function() { init(); animate(); };
 now.ready(function() {
     var Widget = function() {
-        this.animate = function() { tweenNodes(); };
+        this.animate = function() { toggleTween = !toggleTween };
         this.addEdges = function() { initEdges(); };
     }
 
@@ -20,13 +20,11 @@ now.ready(function() {
 
 var W, H, canvas, camera, scene, renderer, stats;
 var nodes, edges, nodeGeometry, edgeGeometry, nodeMaterial, edgeMaterial;
-var object, uniforms, attributes, shaderMaterial, geometry;
 var _nodes = [], _edges = [], _degree = 7;
-
+var toggleTween = false;
 var colormap = ['red', 'orange', 'green', 'cyan', 'blue', 'violet'];
-var layout = { 7: [0, 1, 6, 4, 5, 3, 7], 8: [0, 1, 6, 4, 2, 3, 7] };
+var layout = { 7: [0, 1, 6, 5, 4, 3], 8: [1, 6, 5, 4, 3, 0] };
 var print = console.log.bind(console);
-var cx = 440, cy = 400;
 
 function init() {
     canvas = document.getElementById("canvas");
@@ -38,7 +36,6 @@ function init() {
 
     var scale = 1.5;
     camera = new THREE.OrthographicCamera(-W/scale, W/scale, H/scale, -H/scale, 1, 1000);
-//    camera.position.set(cx, cy, 1);
     scene = new THREE.Scene();
     scene.add(camera);
 
@@ -49,23 +46,9 @@ function init() {
 
     initNodes();
     initEdges();
+    initTween();
 
     window.addEventListener( 'resize', onWindowResize, false );
-}
-
-function tweenNodes() {
-    var ease = TWEEN.Easing.Quadratic.InOut;
-    for (var i = 0; i < nodeGeometry.vertices.length; i++) {
-        var posSrc = _nodes[i].positions[layout[7][_nodes[i].cluster]];
-        var postgt = _nodes[i].positions[layout[8][_nodes[i].cluster]];
-        var source = { x: posSrc[0]*W, y: posSrc[1]*H };
-        var target = { x: postgt[0]*W, y: postgt[1]*H };
-        var tweenForward = new TWEEN.Tween(nodeGeometry.vertices[i]).to(target, 2000).delay(500).easing(ease);
-        var tweenBackward = new TWEEN.Tween(nodeGeometry.vertices[i]).to(source, 2000).delay(500).easing(ease);
-        tweenForward.chain(tweenBackward);
-        tweenBackward.chain(tweenForward);
-        tweenForward.start();
-    }
 }
 
 function initNodes() {
@@ -88,7 +71,7 @@ function initNodes() {
     scene.add(nodes);
 
     var center = getGeometryCenter(nodeGeometry.boundingBox);
-    camera.position.set(center.x, center.y, 1);
+    camera.position.set(center.x, center.y, center.y);
 }
 
 function initEdges() {
@@ -120,15 +103,34 @@ function initEdges() {
     scene.add(edges);
 }
 
-function getGeometryCenter(boundingBox) {
-    return new THREE.Vector3(0.5 * (boundingBox.min.x + boundingBox.max.x),
-                             0.5 * (boundingBox.min.y + boundingBox.max.y),
-                             0.5 * (boundingBox.min.z + boundingBox.max.z));
+function initTween() {
+    var ease = TWEEN.Easing.Quadratic.InOut;
+    for (var i = 0; i < nodeGeometry.vertices.length; i++) {
+        var posSrc = _nodes[i].positions[layout[7][_nodes[i].cluster]];
+        var postgt = _nodes[i].positions[layout[8][_nodes[i].cluster]];
+        var source = { x: posSrc[0]*W, y: posSrc[1]*H };
+        var target = { x: postgt[0]*W, y: postgt[1]*H };
+        var tweenForward = new TWEEN.Tween(nodeGeometry.vertices[i]).to(target, 2000).delay(500).easing(ease);
+        var tweenBackward = new TWEEN.Tween(nodeGeometry.vertices[i]).to(source, 2000).delay(500).easing(ease);
+        tweenForward.chain(tweenBackward);
+        tweenBackward.chain(tweenForward);
+        tweenForward.start();
+    }
+}
+
+function getGeometryCenter(boundary) {
+    return new THREE.Vector3(
+        0.5 * (boundary.min.x + boundary.max.x),
+        0.5 * (boundary.min.y + boundary.max.y),
+        0.5 * (boundary.min.z + boundary.max.z));
 }
 
 function animate() {
-//    nodes.geometry.verticesNeedUpdate = true;
-//    TWEEN.update();
+    if (toggleTween) {
+        nodes.geometry.verticesNeedUpdate = true;
+        TWEEN.update();
+    }
+
     requestAnimationFrame(animate);
     render();
     stats.update();

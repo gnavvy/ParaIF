@@ -24,7 +24,7 @@ var server = http.createServer(app);
 var clients = require('now').initialize(server).now;
 var graph = require('./models/graph.server.js').graph;
 var gosper = require('./models/gosper.server.js').gosper;
-var host = 'gnavvy.cs.ucdavis.edu', port = 4000;
+var host = '127.0.0.1', port = 4000;
 
 clients.start = function () {
     this.now.reset(7, 4, 6);

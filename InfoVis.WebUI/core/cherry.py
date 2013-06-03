@@ -55,6 +55,6 @@ class Cherry:
 
 
 if __name__ == "__main__":
-    cherrypy.server.socket_host = "gnavvy.cs.ucdavis.edu"
+    cherrypy.server.socket_host = "127.0.0.1"
     cherrypy.server.socket_port = 4000
     cherrypy.quickstart(Cherry())

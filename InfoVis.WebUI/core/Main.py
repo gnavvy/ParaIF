@@ -84,5 +84,11 @@ def draw_graph(nodes, edges, labels):
     plt.show()
 
 
-nodes, edges, labels = _snap()
-draw_graph(nodes, edges, labels)
+# nodes, edges, labels = _snap()
+# draw_graph(nodes, edges, labels)
+
+import math
+for dec in range(1, 1000, 1):
+    dec *= 0.001
+    print(dec, (2.0 + math.log10(dec)) / 2.0)
+    # print(dec, -(math.log10(0.01) + math.log10(dec) / math.log10(0.01)))
