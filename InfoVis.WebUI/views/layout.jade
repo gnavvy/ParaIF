@@ -2,32 +2,14 @@
 html
     head
         title= title
-        link(rel='stylesheet', href='lib/bootstrap/css/simplex.bootstrap.min.css')
-        link(rel='stylesheet', href='lib/bootstrap/css/bootstrap-responsive.min.css')
+        // link(rel='stylesheet', href='lib/bootstrap/css/simplex.bootstrap.min.css')
+        // link(rel='stylesheet', href='lib/bootstrap/css/bootstrap-responsive.min.css')
         link(rel='stylesheet', href='lib/jquery/css/jquery-ui-1.10.0.custom.css')
         link(rel='stylesheet', href='css/style.css')
 
     body
-        div.navbar.navbar-fixed-top
-            div.navbar-inner
-                div.container
-                    a(href='/').brand ECS272
-                    ul#main-menu-left.nav
-                        li
-                            a(href='critique') Visualization Critique
-                        li
-                            a(href='chris') Ballpath
-                        li
-                            a(href='sui') SUI
-                    ul#main-menu-right.nav.pull-right
-                        li
-                            a(href='/') Yang Wang
-        div.container-fluid
-            div.row-fluid
-                div.span10(style='float: none; margin: 16px auto 16px auto;')
-                    block content
-
+        block content
         block scripts
-            script(src="lib/jquery/js/jquery-1.9.0.min.js")
             script(src="lib/bootstrap/js/bootstrap.min.js")
+            script(src="lib/jquery/js/jquery-1.9.0.min.js")
             script(src="lib/jquery/js/jquery-ui-1.10.0.custom.min.js")
