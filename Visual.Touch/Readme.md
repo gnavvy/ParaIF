@@ -1,0 +1,3 @@
+## Installation (dependencies)
+
+    $ npm install
