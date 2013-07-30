@@ -1,5 +1,5 @@
 {
-    "name": "ParaIF.SUI"
+    "name": "Visual Touch"
   , "version": "0.0.4"
   , "private": true
   , "dependencies": {
@@ -9,5 +9,6 @@
     , "now": "0.8.x"
     , "underscore": "1.x"
     , "underscore.string": "2.x"
+    , "leapjs": "0.2.0-beta6"
   }
 }

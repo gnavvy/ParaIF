@@ -29,7 +29,7 @@ var clients = require('now').initialize(server).now; {
     };
 }
 
-// receive data from kinect via udp
+// receive data via udp
 var udp = require('dgram').createSocket('udp4'); {
     udp.bind(4000, '169.254.250.190');
     udp.on('listening', function () {
@@ -37,7 +37,7 @@ var udp = require('dgram').createSocket('udp4'); {
     });
     udp.on('message', function (message, remote) {
         console.log(JSON.parse(message));
-        clients.setHands(JSON.parse(message));
+        clients.setData(JSON.parse(message));
         console.log(remote.address + ':' + remote.port +' - ' + message);
     });
 }
