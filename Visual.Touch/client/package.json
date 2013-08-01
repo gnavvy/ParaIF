@@ -1,0 +1,9 @@
+{
+    "name": "Visual.Touch.Clients",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "leapjs": "0.2.0-beta6",
+        "ws": "0.4.x"
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "name": "Visual.Touch.Server",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "express": "3.x",
+        "jade": "0.x",
+        "socket.io": "0.9.x",
+        "now": "0.8.x",
+        "underscore": "1.x",
+        "underscore.string": "2.x",
+        "ws": "0.4.x"
+    }
+}

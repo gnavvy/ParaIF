@@ -1,5 +1,5 @@
 // Leap service setup
-var Leap = require('../node_modules/leapjs/lib/index.js');
+var Leap = require('./node_modules/leapjs/lib/index.js');
 var leap = new Leap.Controller(); {
     leap.on('ready',                function() { console.log("ready"); });
     leap.on('connect',              function() { console.log("connect"); });
@@ -9,7 +9,6 @@ var leap = new Leap.Controller(); {
     leap.on('deviceConnected',      function() { console.log("deviceConnected"); });
     leap.on('deviceDisconnected',   function() { console.log("deviceDisconnected"); });
     leap.connect();
-    console.log("\nWaiting for device to connect...");
 }
 
 // Websocket setup
