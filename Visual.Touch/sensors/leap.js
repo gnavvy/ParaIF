@@ -1,42 +1,29 @@
-var PORT = 4000;
-var HOST = '127.0.0.1';
-
-function JointFactory() {
-    JointFactory.prototype.defaultClass = function(options) {
-        this.x = options.x || 0.0;
-        this.y = options.y || 0.0;
-        this.z = options.z || 0.0;
-        this.s = options.s || 0;
-    };
-    JointFactory.prototype.createJoint = function (options) {
-        return new this.defaultClass(options);
-    }
+// Leap service setup
+var Leap = require('../node_modules/leapjs/lib/index.js');
+var leap = new Leap.Controller(); {
+    leap.on('ready',                function() { console.log("ready"); });
+    leap.on('connect',              function() { console.log("connect"); });
+    leap.on('disconnect',           function() { console.log("disconnect"); });
+    leap.on('focus',                function() { console.log("focus"); });
+    leap.on('blur',                 function() { console.log("blur"); });
+    leap.on('deviceConnected',      function() { console.log("deviceConnected"); });
+    leap.on('deviceDisconnected',   function() { console.log("deviceDisconnected"); });
+    leap.connect();
+    console.log("\nWaiting for device to connect...");
 }
 
-var kinect = require('dgram').createSocket('udp4'); {
-    var handFactory = new JointFactory();
-    setInterval(function() {
-        var left = handFactory.createJoint({
-            x: Math.random() * 0.1 - 0.1,
-            y: Math.random() * 0.2 + 0.1,
-            z: Math.random() * 0.2 + 0.8,
-            s: 0
+// Websocket setup
+var WebSocket = require('ws');
+var wsClient = new WebSocket('ws://localhost:4000/'); {
+    wsClient.on('open', function() {
+        leap.loop(function(frame) {
+            var numHands = frame.hands === undefined ? 0 : frame.hands.length;
+            if (numHands > 0) {
+                wsClient.send(JSON.stringify(frame.hands[0].stabilizedPalmPosition));
+            }
         });
-
-        var right = handFactory.createJoint({
-            x: Math.random() * 0.1,
-            y: Math.random() * 0.2 + 0.1,
-            z: Math.random() * 0.2 + 0.8,
-            s: 1
-        });
-
-        console.log(left);
-        console.log(right);
-
-        var buffer = new Buffer(JSON.stringify([left, right]));
-        kinect.send(buffer, 0, buffer.length, PORT, HOST, function(err, bytes) {
-            if (err) throw err;
-            console.log('UDP message sent to ' + HOST +':'+ PORT);
-        });
-    }, 5000);
+    });
+    wsClient.on('error', function(err) {
+        console.log(err);
+    });
 }

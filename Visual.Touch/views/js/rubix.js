@@ -41,8 +41,8 @@ function initRubix() {
     var offsets = [[-r/2, 0, 0], [r/2, 0, 0], [0, r/2, 0], [0, -r/2, 0], [0, 0, -r/2], [0, 0, r/2]];
     var rotates = [[0, 0, 0], [0, 0, 0], [0.5, 0.5, 0.5], [0.5, 0.5, 0.5], [0, 0, 0.5], [0, 0, 0.5]];
 
-//    for (var n = 0; n < rubix_count; n++) {
-    for (var n = 0; n < 1; n++) {
+    for (var n = 0; n < rubix_count; n++) {
+//    for (var n = 0; n < 1; n++) {
         var blockGeometry = new THREE.CubeGeometry(r, r, r, 10, 10, 10);
         var stickerGeometry = new THREE.CubeGeometry(r*0.9, r*0.9, 5, 10, 10, 1);
 

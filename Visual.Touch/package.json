@@ -1,5 +1,5 @@
 {
-    "name": "Visual Touch"
+    "name": "Visual-Touch"
   , "version": "0.0.4"
   , "private": true
   , "dependencies": {
@@ -10,5 +10,6 @@
     , "underscore": "1.x"
     , "underscore.string": "2.x"
     , "leapjs": "0.2.0-beta6"
+    , "ws": "0.4.x"
   }
 }
