@@ -1,6 +1,3 @@
-// Leap hand model
-var Hand = require('./node_modules/leapjs/lib/hand.js');
-
 // Leap service setup
 var Leap = require('./node_modules/leapjs/lib/index.js');
 var leap = new Leap.Controller(); {
@@ -16,7 +13,7 @@ var leap = new Leap.Controller(); {
 
 // WebSocket setup
 var WebSocket = require('ws');
-var wsClient = new WebSocket('ws://localhost:4000/'); {
+var wsClient = new WebSocket('ws://gnavvy.cs.ucdavis.edu:4000/'); {
     wsClient.on('open', function() {
         leap.loop(function(frame) {
             var numFingers = frame.fingers === undefined ? 0 : frame.fingers.length;

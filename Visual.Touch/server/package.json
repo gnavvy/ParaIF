@@ -9,6 +9,7 @@
         "now": "0.8.x",
         "underscore": "1.x",
         "underscore.string": "2.x",
+        "leapjs": "0.2.x",
         "ws": "0.4.x"
     }
 }

@@ -1,8 +1,7 @@
 var express = require('express');
-var routes = require('./routes');
 var app = module.exports = express(); {
     app.configure(function () {
-        app.get('/', routes.index);
+        app.get('/', function(req, res) { res.render('index', { title: 'Visual Touch' }); });
         app.set('port', 3000 || process.env.PORT);
         app.set('views', __dirname + '/views');
         app.set('view engine', 'jade');
@@ -35,8 +34,9 @@ var WebSocketServer = require('ws').Server;
 var wsServer = new WebSocketServer({ server: server, port: 4000 }); {
     wsServer.on('connection', function(ws) {
         console.log('WebSocket server listening on port ' + wsServer.port);
-        ws.on('message', function(data, flags) {
-            console.log('data: %s', data);
+        ws.on('message', function(data) {
+            console.log(ws._socket.remoteAddress);
+            console.log(data);
         });
         ws.on('error', function(error) {
             console.log(error);

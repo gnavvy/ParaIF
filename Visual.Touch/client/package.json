@@ -3,7 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "leapjs": "0.2.0",
+        "lodash": "1.x",
+        "leapjs": "0.2.x",
         "ws": "0.4.x"
     }
 }
