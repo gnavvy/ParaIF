@@ -1,17 +1,15 @@
 var express = require('express');
 var app = module.exports = express(); {
     app.configure(function () {
-        app.get('/', function(req, res) { res.render('index', { title: 'Visual Touch' }); });
         app.set('port', 3000 || process.env.PORT);
         app.set('views', __dirname + '/views');
-        app.set('view engine', 'jade');
-        app.use(app.router);
         app.use(express.favicon());
         app.use(express.logger('dev'));
         app.use(express.bodyParser());
         app.use(express.methodOverride());
-        app.use(express.static(__dirname + '/views'));
+        app.use(express.static(app.get('views')));
         app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+        app.get('/', function(req, res) { res.sendfile(app.get('views') + '/index.html'); });
     });
 }
 
@@ -29,7 +27,7 @@ var clients = require('now').initialize(server).now; {
     };
 }
 
-//receive data via websocket
+// receive data via websocket
 var WebSocketServer = require('ws').Server;
 var wsServer = new WebSocketServer({ server: server, port: 4000 }); {
     wsServer.on('connection', function(ws) {
