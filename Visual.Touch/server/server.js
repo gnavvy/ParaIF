@@ -37,7 +37,6 @@ var wsServer = new WebSocketServer({ server: server, port: 4000 }); {
         console.log('WebSocket server listening on port ' + wsServer.port);
         ws.on('message', function(data, flags) {
             console.log('data: %s', data);
-            console.log('flags' + flags);
         });
         ws.on('error', function(error) {
             console.log(error);

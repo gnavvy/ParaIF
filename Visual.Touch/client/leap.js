@@ -1,3 +1,6 @@
+// Leap hand model
+var Hand = require('./node_modules/leapjs/lib/hand.js');
+
 // Leap service setup
 var Leap = require('./node_modules/leapjs/lib/index.js');
 var leap = new Leap.Controller(); {
@@ -11,14 +14,17 @@ var leap = new Leap.Controller(); {
     leap.connect();
 }
 
-// Websocket setup
+// WebSocket setup
 var WebSocket = require('ws');
 var wsClient = new WebSocket('ws://localhost:4000/'); {
     wsClient.on('open', function() {
         leap.loop(function(frame) {
-            var numHands = frame.hands === undefined ? 0 : frame.hands.length;
-            if (numHands > 0) {
-                wsClient.send(JSON.stringify(frame.hands[0].stabilizedPalmPosition));
+            var numFingers = frame.fingers === undefined ? 0 : frame.fingers.length;
+            if (numFingers > 0) {
+                for (var i = 0; i < numFingers; i++) {
+                    delete frame.fingers[i].frame;  // remove circular ref
+                }
+                wsClient.send(JSON.stringify(frame.fingers));
             }
         });
     });

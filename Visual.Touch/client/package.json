@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
-        "leapjs": "0.2.0-beta6",
+        "leapjs": "0.2.0",
         "ws": "0.4.x"
     }
 }
