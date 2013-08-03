@@ -1,5 +1,5 @@
 // ***** call from server *****
-now.setData = function(data) { _data = data; print(_data); };
+now.setData = function(data) { _data = data; };
 now.ready(function() { now.start(); });
 now.update = function() { init(); animate(); };
 // ***** call from server *****
@@ -9,6 +9,7 @@ var canvas, camera, scene, renderer, projector, stats;  // basic
 var screen, floor;
 var trackball, plane;
 var _data;
+var _historyIdx = -1;
 var rubix_count = 8;
 var rubix_color = [0x666666, 0x1D8C00, 0x4575D4, 0xE5FB00, 0xDDDDDD, 0xEC0033, 0xFF6501];
 var faceColors =   [[ 20, 20, 20],  // inner: gray [r,g,b]
@@ -22,7 +23,7 @@ var rubix_faces =  [[1, 0, 3, 0, 5, 0], [0, 2, 3, 0, 5, 0],
                     [1, 0, 0, 4, 5, 0], [0, 2, 0, 4, 5, 0],
                     [1, 0, 3, 0, 0, 6], [0, 2, 3, 0, 0, 6],
                     [1, 0, 0, 4, 0, 6], [0, 2, 0, 4, 0, 6]];
-var rubix_cubes = [];
+var objects = [];
 var mouse = new THREE.Vector2();
 var offset = new THREE.Vector3();
 var INTERSECTED, SELECTED;
@@ -107,7 +108,7 @@ function initRubix() {
 
         scene.add(block);
 
-        rubix_cubes.push(block);
+        objects.push(block);
 
     }
 }
@@ -149,8 +150,7 @@ function initScene() {
 
     // Camera
     camera = new THREE.PerspectiveCamera(45, W / H, 1, 10000);
-    camera.position.z = 1000;
-    camera.position.set(-w*15, h*15, w*15);
+    camera.position.set(0, 500, 2000);
     camera.lookAt(scene.position);
     scene.add(camera);
 
@@ -224,6 +224,13 @@ function animate() {
 }
 
 function render() {
+    var hands = _data;
+    var numHands = hands === undefined ? 0 : hands.length;
+    if (numHands > 0) {
+        objects[0].position.fromArray(hands[0].stabilizedPalmPosition);
+        objects[0].rotation.fromArray(hands[0].direction);
+    }
+
     renderer.render(scene, camera);
 }
 
@@ -251,7 +258,7 @@ function onDocumentMouseMove( event ) {
         return;
     }
 
-    var intersects = raycaster.intersectObjects(rubix_cubes, true);
+    var intersects = raycaster.intersectObjects(objects, true);
     if (intersects.length > 0) {
         if (INTERSECTED != intersects[0].object) {
             if (INTERSECTED) {
@@ -290,7 +297,7 @@ function onDocumentMouseDown(event) {
     var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
     projector.unprojectVector( vector, camera );
     var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
-    var intersects = raycaster.intersectObjects(rubix_cubes, true);
+    var intersects = raycaster.intersectObjects(objects, true);
     if (intersects.length > 0) {
         trackball.enabled = false;
         SELECTED = intersects[0].object;

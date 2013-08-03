@@ -32,9 +32,11 @@ var WebSocketServer = require('ws').Server;
 var wsServer = new WebSocketServer({ server: server, port: 4000 }); {
     wsServer.on('connection', function(ws) {
         console.log('WebSocket server listening on port ' + wsServer.port);
-        ws.on('message', function(data) {
-            console.log(ws._socket.remoteAddress);
+        ws.on('message', function(msg) {
+//            console.log(ws._socket.remoteAddress);
+            var data = JSON.parse(msg);
             console.log(data);
+            clients.setData(data);
         });
         ws.on('error', function(error) {
             console.log(error);

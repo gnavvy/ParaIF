@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 // Leap service setup
 var Leap = require('./node_modules/leapjs/lib/index.js');
 var leap = new Leap.Controller(); {
@@ -16,13 +18,27 @@ var WebSocket = require('ws');
 var wsClient = new WebSocket('ws://gnavvy.cs.ucdavis.edu:4000/'); {
     wsClient.on('open', function() {
         leap.loop(function(frame) {
-            var numFingers = frame.fingers === undefined ? 0 : frame.fingers.length;
-            if (numFingers > 0) {
-                for (var i = 0; i < numFingers; i++) {
-                    delete frame.fingers[i].frame;  // remove circular ref
+            var hands = frame.hands;
+            var numHands = hands === undefined ? 0 : hands.length;
+            if (numHands > 0) {
+                for (var hid = 0; hid < numHands; hid++) {
+                    var fingers = hands[hid].fingers;
+                    var numFingers = fingers === undefined ? 0 : fingers.length;
+                    if (numFingers > 0) {
+                        for (var fid = 0; fid < numFingers; fid++) {
+                            delete fingers[fid].frame;  // remove circular ref
+                        }
+                    }
+
+                    delete hands[hid].frame;
+                    delete hands[hid].pointables;
+                    delete hands[hid].tools;
+
+                    _.assign(hands[hid], { 'historyIdx': frame.historyIdx });
                 }
-                wsClient.send(JSON.stringify(frame.fingers));
             }
+
+            wsClient.send(JSON.stringify(hands));
         });
     });
     wsClient.on('error', function(err) {
