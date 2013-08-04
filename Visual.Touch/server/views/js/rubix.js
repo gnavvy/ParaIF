@@ -90,6 +90,7 @@ function initRubix() {
             sticker.rotation.y = block.rotation.y + rotates[f][1] * Math.PI;
             sticker.rotation.z = block.rotation.z + rotates[f][2] * Math.PI;
             block.add(sticker);
+//            sticker.add(block);
         }
 
 //        var sticker = new THREE.Mesh(stickerGeometry, shinnyPaper);
@@ -258,16 +259,19 @@ function onDocumentMouseMove( event ) {
         return;
     }
 
-    var intersects = raycaster.intersectObjects(objects, true);
-    if (intersects.length > 0) {
-        if (INTERSECTED != intersects[0].object) {
+    var candidates = raycaster.intersectObjects(objects, true);
+    if (candidates.length > 0) {
+        if (INTERSECTED != candidates[0].object) {
             if (INTERSECTED) {
                 INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
             }
-            INTERSECTED = intersects[0].object;
+            INTERSECTED = candidates[0].object;
+            while (INTERSECTED.children.length === 0) {
+                INTERSECTED = INTERSECTED.parent;
+            }
             INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
             plane.position.copy(INTERSECTED.position);
-            plane.lookAt(camera.position);
+            plane.lookAt(camera.position);  // face to the user
         }
 
         canvas.style.cursor = 'pointer';
@@ -295,14 +299,19 @@ function onDocumentMouseUp(event) {
 function onDocumentMouseDown(event) {
     event.preventDefault();
     var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
-    projector.unprojectVector( vector, camera );
-    var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
-    var intersects = raycaster.intersectObjects(objects, true);
-    if (intersects.length > 0) {
+    projector.unprojectVector(vector, camera);
+    var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+    var candidates = raycaster.intersectObjects(objects, true);
+    if (candidates.length > 0) {
         trackball.enabled = false;
-        SELECTED = intersects[0].object;
+        SELECTED = candidates[0].object;  // first hit object
+        while (SELECTED.children.length === 0) {
+            SELECTED = SELECTED.parent;
+        }
+//        print(SELECTED);
         var intersects = raycaster.intersectObject(plane);
         offset.copy(intersects[0].point).sub(plane.position);
+        print(offset);
         canvas.style.cursor = 'move';
     }
 }

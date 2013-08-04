@@ -36,9 +36,8 @@ var wsClient = new WebSocket('ws://gnavvy.cs.ucdavis.edu:4000/'); {
 
                     _.assign(hands[hid], { 'historyIdx': frame.historyIdx });
                 }
+                wsClient.send(JSON.stringify(hands));
             }
-
-            wsClient.send(JSON.stringify(hands));
         });
     });
     wsClient.on('error', function(err) {
