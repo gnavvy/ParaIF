@@ -266,7 +266,7 @@ function onDocumentMouseMove( event ) {
                 INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
             }
             INTERSECTED = candidates[0].object;
-            while (INTERSECTED.children.length === 0) {
+            while (!(INTERSECTED.parent instanceof THREE.Scene)) {  // select group
                 INTERSECTED = INTERSECTED.parent;
             }
             INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
@@ -305,13 +305,11 @@ function onDocumentMouseDown(event) {
     if (candidates.length > 0) {
         trackball.enabled = false;
         SELECTED = candidates[0].object;  // first hit object
-        while (SELECTED.children.length === 0) {
+        while (!(SELECTED.parent instanceof THREE.Scene)) {  // select group
             SELECTED = SELECTED.parent;
         }
-//        print(SELECTED);
         var intersects = raycaster.intersectObject(plane);
         offset.copy(intersects[0].point).sub(plane.position);
-        print(offset);
         canvas.style.cursor = 'move';
     }
 }
