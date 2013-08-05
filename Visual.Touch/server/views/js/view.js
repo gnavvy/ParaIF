@@ -23,6 +23,13 @@ function init() {
     initRubix();
 }
 
+function initRubix() {
+    var cube = rubix.createCube(0);
+    cube.position.y = 200;
+    scene.add(cube);
+    objects.push(cube);
+}
+
 function initCanvas() {
     window.addEventListener('resize', onWindowResize, false);
     W = window.innerWidth;  H = window.innerHeight;
@@ -76,9 +83,7 @@ function initScene() {
     trackball.addEventListener('change', render);
 
     // Axis
-    var axis = new THREE.AxisHelper(100);
-    axis.position.set(0, 0, 0);
-    scene.add(axis);
+    scene.add(new THREE.AxisHelper(100));
 
     // Floor
     floor = new THREE.Mesh(
@@ -123,12 +128,6 @@ function initLighting() {
     scene.add(light3);
 }
 
-function initRubix() {
-    var cube = rubix.createCube(0);
-    scene.add(cube);
-    objects.push(cube);
-}
-
 function animate() {
     requestAnimationFrame(animate);
     render();
@@ -156,7 +155,7 @@ function onWindowResize() {
     renderer.setSize(W, H);
 }
 
-function onDocumentMouseMove( event ) {
+function onDocumentMouseMove(event) {
     event.preventDefault();
 
     mouse.x =  (event.clientX / window.innerWidth ) * 2 - 1;
