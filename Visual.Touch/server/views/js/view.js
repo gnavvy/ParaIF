@@ -70,7 +70,7 @@ function initScene() {
 
     // Camera
     camera = new THREE.PerspectiveCamera(45, W / H, 1, 10000);
-    camera.position.set(0, 500, 2000);
+    camera.position.set(1000, 1000, 1500);
     camera.lookAt(scene.position);
     scene.add(camera);
 
@@ -151,6 +151,31 @@ function onWindowResize() {
     renderer.setSize(W, H);
 }
 
+function onDocumentMouseDown(event) {
+    event.preventDefault();
+
+    mouse.x =  (event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+    projector.unprojectVector(vector, camera);
+
+    var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+    var candidates = raycaster.intersectObjects(objects, true);
+    if (candidates.length > 0) {
+        trackball.enabled = false;  // stop rotating camera
+        SELECTED = candidates[0].object;  // first hit object
+        while (!(SELECTED.parent instanceof THREE.Scene)) {  // select group
+            SELECTED = SELECTED.parent;
+        }
+        _state = event.button === 0 ? STATE.ROTATE : STATE.TRANSLATE;
+        if (_state === STATE.TRANSLATE) {
+            offset.copy(raycaster.intersectObject(plane)[0].point).sub(plane.position);
+            canvas.style.cursor = 'move';
+        }
+    }
+}
+
 function onDocumentMouseMove(event) {
     event.preventDefault();
 
@@ -160,41 +185,8 @@ function onDocumentMouseMove(event) {
     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
     projector.unprojectVector(vector, camera);
 
-    print(_state);
-
-    if (_state === STATE.TRANSLATE) {
-        var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
-
-        if (SELECTED) {  // an object is previously selected
-            SELECTED.position.copy(raycaster.intersectObject(plane)[0].point.sub(offset));
-            return;
-        }
-
-        var candidates = raycaster.intersectObjects(objects, true);
-        if (candidates.length > 0) {
-            if (INTERSECTED != candidates[0].object) {
-                if (INTERSECTED) {
-                    INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
-                }
-                INTERSECTED = candidates[0].object;
-                while (!(INTERSECTED.parent instanceof THREE.Scene)) {  // select group
-                    INTERSECTED = INTERSECTED.parent;
-                }
-                INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
-                plane.position.copy(INTERSECTED.position);
-                plane.lookAt(camera.position);  // face to the user
-            }
-
-            canvas.style.cursor = 'pointer';
-
-        } else {
-            if (INTERSECTED) {
-                INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
-            }
-            INTERSECTED = null;
-            canvas.style.cursor = 'auto';
-        }
-    } else if (_state === STATE.ROTATE) {
+    if (_state === STATE.ROTATE) {
+        print("rotate");
         var rotateQuaternion = new THREE.Quaternion();
         rotateQuaternion.setFromAxisAngle(vector, 1);
         var v = new THREE.Vector3(mouse.y, -mouse.x, 0);
@@ -203,6 +195,32 @@ function onDocumentMouseMove(event) {
         THREE.Quaternion.slerp(SELECTED.quaternion, q, newQuaternion, 1);
         SELECTED.quaternion = newQuaternion;
         SELECTED.quaternion.normalize();
+        return;
+    }
+
+    var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+
+    if (SELECTED) {  // an object is previously selected
+        SELECTED.position.copy(raycaster.intersectObject(plane)[0].point.sub(offset));
+        return;
+    }
+
+    var candidates = raycaster.intersectObjects(objects, true);
+    if (candidates.length > 0) {
+        if (INTERSECTED != candidates[0].object) {
+            INTERSECTED = candidates[0].object;
+            while (!(INTERSECTED.parent instanceof THREE.Scene)) {  // select group
+                INTERSECTED = INTERSECTED.parent;
+            }
+            INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
+            plane.position.copy(INTERSECTED.position);
+            plane.lookAt(camera.position);  // face to the user
+        }
+        canvas.style.cursor = 'pointer';
+
+    } else {
+        INTERSECTED = null;
+        canvas.style.cursor = 'auto';
     }
 }
 
@@ -215,26 +233,4 @@ function onDocumentMouseUp(event) {
         SELECTED = null;
     }
     canvas.style.cursor = 'auto';
-}
-
-function onDocumentMouseDown(event) {
-    event.preventDefault();
-
-    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
-    projector.unprojectVector(vector, camera);
-    var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
-    var candidates = raycaster.intersectObjects(objects, true);
-    if (candidates.length > 0) {
-        trackball.enabled = false;  // stop rotating camera
-        SELECTED = candidates[0].object;  // first hit object
-        while (!(SELECTED.parent instanceof THREE.Scene)) {  // select group
-            SELECTED = SELECTED.parent;
-        }
-        print(event.button);
-        _state = event.button === 0 ? STATE.ROTATE : STATE.TRANSLATE;
-        if (_state === STATE.TRANSLATE) {
-            offset.copy(raycaster.intersectObject(plane)[0].point).sub(plane.position);
-            canvas.style.cursor = 'move';
-        }
-    }
 }
