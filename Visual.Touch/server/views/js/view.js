@@ -7,7 +7,7 @@ now.update = function() { init(); animate(); };
 var W, H, w, h;
 var canvas, camera, scene, renderer, projector, stats;  // basic
 var screen, floor;
-var trackball, plane;
+var trackball, plane, fillip;
 var _hands;
 var objects = [];
 var mouse = new THREE.Vector2();
@@ -15,6 +15,7 @@ var offset = new THREE.Vector3();
 var v3 = new THREE.Vector3();
 var INTERSECTED, SELECTED;
 var print = console.log.bind(console);
+var STATE = { NONE: 0, ROTATE: 1, SCALE: 2, TRANSLATE: 3 }, _state = STATE.NONE;
 
 function init() {
     initCanvas();
@@ -25,6 +26,8 @@ function init() {
 
 function initRubix() {
     var cube = rubix.createCube(0);
+    cube.autoUpdateMatrix = false;
+    cube.useQuaternion = true;
     cube.position.y = 200;
     scene.add(cube);
     objects.push(cube);
@@ -73,13 +76,7 @@ function initScene() {
 
     // Trackball
     trackball = new THREE.TrackballControls(camera);
-    trackball.rotateSpeed = 1.0;
-    trackball.zoomSpeed = 1.2;
-    trackball.panSpeed = 0.8;
-    trackball.noZoom = false;
-    trackball.noPan = false;
     trackball.staticMoving = true;
-    trackball.dynamicDampingFactor = 0.3;
     trackball.addEventListener('change', render);
 
     // Axis
@@ -139,8 +136,7 @@ function animate() {
 }
 
 function render() {
-    var numHands = _hands === undefined ? 0 : _hands.length;
-    if (numHands > 0) {
+    if (_hands && _hands.length > 0) {
         objects[0].position.fromArray(_hands[0].stabilizedPalmPosition);
         objects[0].rotation.fromArray(_hands[0].direction);
     }
@@ -164,65 +160,81 @@ function onDocumentMouseMove(event) {
     var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
     projector.unprojectVector(vector, camera);
 
-    var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+    print(_state);
 
-    if (SELECTED) {
-        var intersects = raycaster.intersectObject(plane);
-        SELECTED.position.copy(intersects[0].point.sub(offset));
-        return;
-    }
+    if (_state === STATE.TRANSLATE) {
+        var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
 
-    var candidates = raycaster.intersectObjects(objects, true);
-    if (candidates.length > 0) {
-        if (INTERSECTED != candidates[0].object) {
+        if (SELECTED) {  // an object is previously selected
+            SELECTED.position.copy(raycaster.intersectObject(plane)[0].point.sub(offset));
+            return;
+        }
+
+        var candidates = raycaster.intersectObjects(objects, true);
+        if (candidates.length > 0) {
+            if (INTERSECTED != candidates[0].object) {
+                if (INTERSECTED) {
+                    INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
+                }
+                INTERSECTED = candidates[0].object;
+                while (!(INTERSECTED.parent instanceof THREE.Scene)) {  // select group
+                    INTERSECTED = INTERSECTED.parent;
+                }
+                INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
+                plane.position.copy(INTERSECTED.position);
+                plane.lookAt(camera.position);  // face to the user
+            }
+
+            canvas.style.cursor = 'pointer';
+
+        } else {
             if (INTERSECTED) {
                 INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
             }
-            INTERSECTED = candidates[0].object;
-            while (!(INTERSECTED.parent instanceof THREE.Scene)) {  // select group
-                INTERSECTED = INTERSECTED.parent;
-            }
-            INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
-            plane.position.copy(INTERSECTED.position);
-            plane.lookAt(camera.position);  // face to the user
+            INTERSECTED = null;
+            canvas.style.cursor = 'auto';
         }
-
-        canvas.style.cursor = 'pointer';
-
-    } else {
-        if (INTERSECTED) {
-            INTERSECTED.material.color.setHex(INTERSECTED.currentHex);
-        }
-        INTERSECTED = null;
-        canvas.style.cursor = 'auto';
+    } else if (_state === STATE.ROTATE) {
+        var rotateQuaternion = new THREE.Quaternion();
+        rotateQuaternion.setFromAxisAngle(vector, 1);
+        var v = new THREE.Vector3(mouse.y, -mouse.x, 0);
+        var q = new THREE.Quaternion().setFromEuler(v);
+        var newQuaternion = new THREE.Quaternion();
+        THREE.Quaternion.slerp(SELECTED.quaternion, q, newQuaternion, 1);
+        SELECTED.quaternion = newQuaternion;
+        SELECTED.quaternion.normalize();
     }
 }
 
 function onDocumentMouseUp(event) {
     event.preventDefault();
+    _state = STATE.NONE;
     trackball.enabled = true;
     if (INTERSECTED) {
-        plane.position.copy( INTERSECTED.position );
+        plane.position.copy(INTERSECTED.position);
         SELECTED = null;
     }
     canvas.style.cursor = 'auto';
-
 }
 
 function onDocumentMouseDown(event) {
     event.preventDefault();
+
     var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
     projector.unprojectVector(vector, camera);
     var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
     var candidates = raycaster.intersectObjects(objects, true);
     if (candidates.length > 0) {
-        trackball.enabled = false;
+        trackball.enabled = false;  // stop rotating camera
         SELECTED = candidates[0].object;  // first hit object
         while (!(SELECTED.parent instanceof THREE.Scene)) {  // select group
             SELECTED = SELECTED.parent;
         }
-        var intersects = raycaster.intersectObject(plane);
-        offset.copy(intersects[0].point).sub(plane.position);
-        canvas.style.cursor = 'move';
+        print(event.button);
+        _state = event.button === 0 ? STATE.ROTATE : STATE.TRANSLATE;
+        if (_state === STATE.TRANSLATE) {
+            offset.copy(raycaster.intersectObject(plane)[0].point).sub(plane.position);
+            canvas.style.cursor = 'move';
+        }
     }
 }
