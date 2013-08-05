@@ -191,7 +191,7 @@ function animate() {
 }
 
 function render() {
-    var numHands = _hands === undefined ? 0 : hands.length;
+    var numHands = _hands === undefined ? 0 : _hands.length;
     if (numHands > 0) {
         objects[0].position.fromArray(_hands[0].stabilizedPalmPosition);
         objects[0].rotation.fromArray(_hands[0].direction);
