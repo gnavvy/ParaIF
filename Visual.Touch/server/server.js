@@ -36,7 +36,7 @@ var wsServer = new WebSocketServer({ server: server, port: 4000 }); {
 //            console.log(ws._socket.remoteAddress);
             var data = JSON.parse(msg);
             console.log(data);
-            clients.setData(data);
+            clients.setHands(data);
         });
         ws.on('error', function(error) {
             console.log(error);
