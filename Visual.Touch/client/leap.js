@@ -15,7 +15,7 @@ var leap = new Leap.Controller(); {
 
 // WebSocket setup
 var WebSocket = require('ws');
-var wsClient = new WebSocket('ws://gnavvy.cs.ucdavis.edu:4000/'); {
+var wsClient = new WebSocket('ws://169.237.10.208:4000/'); {
     wsClient.on('open', function() {
         leap.loop(function(frame) {
             var hands = frame.hands;
