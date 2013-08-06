@@ -11,6 +11,7 @@ var trackball, plane, fillip;
 var _hands;
 var objects = [];
 var mouse = new THREE.Vector2();
+var mousePrev = new THREE.Vector2();
 var offset = new THREE.Vector3();
 var v3 = new THREE.Vector3();
 var INTERSECTED, SELECTED;
@@ -93,7 +94,7 @@ function initScene() {
     // Hit Plane
     plane = new THREE.Mesh(
         new THREE.PlaneGeometry(2000, 2000, 8, 8),
-        new THREE.MeshBasicMaterial({color: 0x000000, opacity: 0.25, transparent: true, wireframe: true})
+        new THREE.MeshBasicMaterial({ transparent: true, wireframe: true })
     );
     plane.visible = false;
     scene.add(plane);
@@ -154,10 +155,7 @@ function onWindowResize() {
 function onDocumentMouseDown(event) {
     event.preventDefault();
 
-    mouse.x =  (event.clientX / window.innerWidth ) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+    var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5);
     projector.unprojectVector(vector, camera);
 
     var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
@@ -179,6 +177,8 @@ function onDocumentMouseDown(event) {
 function onDocumentMouseMove(event) {
     event.preventDefault();
 
+    mousePrev.copy(mouse);
+
     mouse.x =  (event.clientX / window.innerWidth ) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -186,15 +186,9 @@ function onDocumentMouseMove(event) {
     projector.unprojectVector(vector, camera);
 
     if (_state === STATE.ROTATE) {
-        print("rotate");
-        var rotateQuaternion = new THREE.Quaternion();
-        rotateQuaternion.setFromAxisAngle(vector, 1);
-        var v = new THREE.Vector3(mouse.y, -mouse.x, 0);
-        var q = new THREE.Quaternion().setFromEuler(v);
-        var newQuaternion = new THREE.Quaternion();
-        THREE.Quaternion.slerp(SELECTED.quaternion, q, newQuaternion, 1);
-        SELECTED.quaternion = newQuaternion;
-        SELECTED.quaternion.normalize();
+        var euler = new THREE.Vector2().subVectors(mouse, mousePrev).multiplyScalar(2);
+        var targetQuaternion = new THREE.Quaternion().setFromEuler(new THREE.Vector3(-euler.y, euler.x, 0));
+        SELECTED.quaternion.multiplyQuaternions(SELECTED.quaternion, targetQuaternion);
         return;
     }
 
@@ -212,7 +206,6 @@ function onDocumentMouseMove(event) {
             while (!(INTERSECTED.parent instanceof THREE.Scene)) {  // select group
                 INTERSECTED = INTERSECTED.parent;
             }
-            INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
             plane.position.copy(INTERSECTED.position);
             plane.lookAt(camera.position);  // face to the user
         }
